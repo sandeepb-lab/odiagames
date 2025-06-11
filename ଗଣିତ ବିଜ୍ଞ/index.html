@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="or">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SB ଗଣିତ ବିଜ୍ଞ</title>
+
+    <!-- SEO and Metadata -->
+    <meta id="meta-description" name="description" content="ପିଲାମାନଙ୍କ ପାଇଁ ଏକ ମଜାଦାର ଗଣିତ ଖେଳ। SB ଗଣିତ ବିଜ୍ଞ ସହିତ ମିଶାଣ, ଫେଡାଣ, ଗୁଣନ ଏବଂ ହରଣ ଶିଖନ୍ତୁ।">
+    <meta name="keywords" content="Odia math game, ganita bigyan, math for kids, odia learning, ଗଣିତ ଖେଳ, ପିଲାଙ୍କ ପାଇଁ ଗଣିତ, SB Ganita Bigyan">
+    <meta name="author" content="SB Ganita Bigyan">
+
+    <!-- Open Graph / Facebook -->
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://your-website-url.com/"> <!-- Replace with your actual URL -->
+    <meta property="og:title" content="SB ଗଣିତ ବିଜ୍ଞ - Odia Math Game">
+    <meta property="og:description" content="A fun and interactive math game for kids to learn addition, subtraction, multiplication, and division in Odia.">
+    <meta property="og:image" content="https://your-website-url.com/preview-image.png"> <!-- Replace with your actual image URL -->
+
+    <!-- Twitter -->
+    <meta property="twitter:card" content="summary_large_image">
+    <meta property="twitter:url" content="https://your-website-url.com/"> <!-- Replace with your actual URL -->
+    <meta property="twitter:title" content="SB ଗଣିତ ବିଜ୍ଞ - Odia Math Game">
+    <meta property="twitter:description" content="A fun and interactive math game for kids to learn addition, subtraction, multiplication, and division in Odia.">
+    <meta property="twitter:image" content="https://your-website-url.com/preview-image.png"> <!-- Replace with your actual image URL -->
+
+    <!-- Fonts and Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Oriya:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+
+    <style>
+        :root {
+            --blue-header-light: #3B82F6; --bg-light: #F0F4F8; --card-bg-light: #ffffff; --text-light: #1F2937;
+            --text-muted-light: #6B7280; --primary-btn-light: #EAB308; --secondary-btn-light: #60A5FA;
+            --skip-btn-light: #9CA3AF; --border-light: #E5E7EB; --correct-light: #22C55E; --wrong-light: #EF4444;
+            --blue-header-dark: #1E40AF; --bg-dark: #0F172A; --card-bg-dark: #1E293B; --text-dark: #E2E8F0;
+            --text-muted-dark: #94A3B8; --primary-btn-dark: #F59E0B; --secondary-btn-dark: #3B82F6;
+            --skip-btn-dark: #4B5563; --border-dark: #334155; --correct-dark: #4ADE80; --wrong-dark: #F87171;
+        }
+        [data-theme="light"] {
+            --header-bg: var(--blue-header-light); --bg-color: var(--bg-light); --card-bg: var(--card-bg-light);
+            --text-color: var(--text-light); --text-muted-color: var(--text-muted-light); --primary-btn-bg: var(--primary-btn-light);
+            --secondary-btn-bg: var(--secondary-btn-light); --skip-btn-bg: var(--skip-btn-light); --border-color: var(--border-light);
+            --correct-color: var(--correct-light); --wrong-color: var(--wrong-light); --header-text: white;
+        }
+        [data-theme="dark"] {
+            --header-bg: var(--blue-header-dark); --bg-color: var(--bg-dark); --card-bg: var(--card-bg-dark);
+            --text-color: var(--text-dark); --text-muted-color: var(--text-muted-dark); --primary-btn-bg: var(--primary-btn-dark);
+            --secondary-btn-bg: var(--secondary-btn-dark); --skip-btn-bg: var(--skip-btn-dark); --border-color: var(--border-dark);
+            --correct-color: var(--correct-dark); --wrong-color: var(--wrong-dark); --header-text: #E2E8F0;
+        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Noto Sans Oriya', 'Poppins', sans-serif; background-color: var(--bg-color); color: var(--text-color); transition: background-color 0.3s, color 0.3s; padding-bottom: 5rem; }
+        .container { max-width: 800px; margin: 0 auto; padding: 0 1rem; }
+        .app-header { background-color: var(--header-bg); color: var(--header-text); padding: 1rem; }
+        .header-content { display: flex; justify-content: space-between; align-items: center; }
+        .title-group { display: flex; align-items: center; gap: 0.75rem; }
+        .logo { font-size: 2rem; }
+        .title { font-size: 1.8rem; font-weight: 700; }
+        .scores-group { display: flex; gap: 1.5rem; text-align: right; }
+        .score-container { font-size: 1.1rem; font-weight: 600; }
+        #score-value { color: #A7F3D0; }
+        #incorrect-score-value { color: #FECACA; }
+        main { padding: 2rem 0; }
+        .controls-panel { background-color: var(--card-bg); border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .control-group { display: flex; align-items: center; gap: 1.5rem; }
+        .control-btn, .lang-btn { background: none; border: none; color: var(--text-muted-color); cursor: pointer; font-size: 1.5rem; transition: color 0.2s; }
+        .control-btn:hover, .lang-btn:hover { color: var(--text-color); }
+        .lang-btn { display: flex; align-items: center; gap: 0.5rem; font-size: 1rem; }
+        .lang-btn span { font-weight: 600; }
+        .select-group { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
+        .select-group label { color: var(--text-muted-color); font-weight: 600; }
+        .select-group select { background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.4rem 0.8rem; font-family: inherit; font-weight: 600; cursor: pointer; }
+        .game-card { background-color: var(--card-bg); border-radius: 16px; padding: 2.5rem; text-align: center; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07); }
+        #instruction { color: var(--text-muted-color); font-size: 1.1rem; margin-bottom: 1.5rem; }
+        #question { font-size: 3.5rem; font-weight: 700; margin-bottom: 3rem; word-wrap: break-word; }
+        .options-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
+        .option-btn { background-color: var(--primary-btn-bg); color: white; border: 3px solid transparent; border-radius: 12px; padding: 1.25rem; font-size: 2.2rem; font-weight: 700; cursor: pointer; transition: all 0.2s ease; font-family: 'Noto Sans Oriya', 'Poppins', sans-serif; }
+        .option-btn:hover:not(.disabled) { transform: translateY(-4px); }
+        .option-btn.disabled { opacity: 0.7; cursor: not-allowed; }
+        .option-btn.selected.correct { background-color: var(--correct-color); border-color: #fff; }
+        .option-btn.selected.wrong { background-color: var(--wrong-color); border-color: #fff; }
+        .option-btn.correct-answer { background-color: var(--correct-color); }
+        .action-buttons { display: flex; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap; min-height: 50px; }
+        #next-question-btn, #skip-question-btn { color: white; border: none; border-radius: 10px; padding: 0.8rem 2rem; font-size: 1.2rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s, transform 0.2s; font-family: inherit; }
+        #next-question-btn { background-color: var(--secondary-btn-bg); display: none; }
+        #skip-question-btn { background-color: var(--skip-btn-bg); display: block; }
+        #next-question-btn:hover, #skip-question-btn:hover { transform: scale(1.05); }
+        .footer-message-bar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--card-bg); color: var(--text-color); padding: 1rem; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 1rem; transition: transform 0.3s ease; transform: translateY(100%); z-index: 1000; }
+        .footer-message-bar.visible { transform: translateY(0); }
+        .close-footer-msg { font-size: 1.5rem; line-height: 1; cursor: pointer; color: var(--text-muted-color); }
+        @media (max-width: 768px) { .title { font-size: 1.5rem; } .header-content { flex-direction: column; gap: 0.75rem; } .scores-group { width: 100%; justify-content: space-around; } .controls-panel { flex-direction: column; align-items: stretch; gap: 1.5rem; } .select-group { justify-content: space-between; } .game-card { padding: 1.5rem; } #question { font-size: 2.8rem; } .option-btn { font-size: 1.8rem; } }
+    </style>
+</head>
+
+<body data-theme="light">
+
+    <header class="app-header">
+        <div class="container">
+            <div class="header-content">
+                <div class="title-group">
+                    <i class="fa-solid fa-calculator logo"></i>
+                    <h1 class="title">SB ଗଣିତ ବିଜ୍ଞ</h1>
+                </div>
+                <div class="scores-group">
+                    <div class="score-container">
+                        <span id="score-label"></span>: <span class="score-value" id="score-value"></span>
+                    </div>
+                    <div class="score-container">
+                        <span id="incorrect-score-label"></span>: <span class="score-value" id="incorrect-score-value"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <main>
+        <div class="container">
+            <div class="controls-panel">
+                <div class="control-group">
+                    <button class="lang-btn" id="lang-switch"><i class="fa-solid fa-language"></i><span id="lang-text"></span></button>
+                    <button class="control-btn" id="theme-switch" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+                </div>
+                <div class="select-group">
+                    <label id="operation-label" for="operation-select"></label>
+                    <select id="operation-select">
+                        <option value="mix"></option><option value="+"></option><option value="-"></option><option value="×"></option><option value="÷"></option>
+                    </select>
+                    <label id="difficulty-label" for="difficulty-select"></label>
+                    <select id="difficulty-select">
+                        <option value="easy"></option><option value="medium"></option><option value="hard"></option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="game-card">
+                <h2 id="instruction"></h2>
+                <div id="question"></div>
+                <div class="options-container" id="options-container"></div>
+                <div class="action-buttons">
+                    <button id="skip-question-btn"></button>
+                    <button id="next-question-btn"></button>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer-message-bar" id="footer-bar">
+        <span id="footer-message-text"></span>
+        <span class="close-footer-msg" id="close-footer-msg" title="Close">×</span>
+    </footer>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        // --- DOM ELEMENTS ---
+        const dom = {
+            title: document.querySelector('.title'), scoreLabel: document.getElementById('score-label'), scoreValue: document.getElementById('score-value'),
+            incorrectScoreLabel: document.getElementById('incorrect-score-label'), incorrectScoreValue: document.getElementById('incorrect-score-value'),
+            langSwitch: document.getElementById('lang-switch'), langText: document.getElementById('lang-text'), themeSwitch: document.getElementById('theme-switch'),
+            operationLabel: document.getElementById('operation-label'), operationSelect: document.getElementById('operation-select'),
+            difficultyLabel: document.getElementById('difficulty-label'), difficultySelect: document.getElementById('difficulty-select'),
+            instruction: document.getElementById('instruction'), question: document.getElementById('question'), optionsContainer: document.getElementById('options-container'),
+            nextBtn: document.getElementById('next-question-btn'), skipBtn: document.getElementById('skip-question-btn'), footerBar: document.getElementById('footer-bar'),
+            footerMsgText: document.getElementById('footer-message-text'), closeFooterMsg: document.getElementById('close-footer-msg'), metaDescription: document.getElementById('meta-description')
+        };
+
+        // --- STATE ---
+        let state = { score: 0, incorrectScore: 0, lang: 'odia', theme: 'light', difficulty: 'easy', operation: 'mix' };
+        let currentQuestion = {};
+        let nextQuestionTimerId = null;
+
+        // --- DATA & CONFIG ---
+        const odiaNumerals = ['୦', '୧', '୨', '୩', '୪', '୫', '୬', '୭', '୮', '୯'];
+        const operators = ['+', '-', '×', '÷'];
+        const translations = {
+            odia: {
+                title: "SB ଗଣିତ ବିଜ୍ଞ", scoreLabel: "ସ୍କୋର୍", incorrectLabel: "ଭୁଲ୍", langText: "English",
+                opLabel: "ପ୍ରକାର:", ops: { mix: "ମିଶ୍ରଣ", "+": "ମିଶାଣ", "-": "ଫେଡାଣ", "×": "ଗୁଣନ", "÷": "ହରଣ" },
+                diffLabel: "ସ୍ତର:", diffs: { easy: "ସହଜ", medium: "ମଧ୍ୟମ", hard: "କଠିନ" },
+                instruction: "ଆପଣଙ୍କର ଉତ୍ତର ବାଛନ୍ତୁ", nextBtn: "ପରବର୍ତ୍ତୀ ପ୍ରଶ୍ନ", skipBtn: "ପ୍ରଶ୍ନ ଛାଡନ୍ତୁ",
+                offlineMsg: "କୌଣସି ଅସୁବିଧା ନାହିଁ, ଆପଣ ଅଫଲାଇନରେ ମଧ୍ୟ ଏହାକୁ ବ୍ୟବହାର କରିପାରିବେ",
+                onlineMsg: "ଆପଣଙ୍କ ସ୍କୋର୍ ଆପଣଙ୍କ ବ୍ରାଉଜରରେ ସେଭ୍ ହୋଇଛି",
+                metaDesc: "ପିଲାମାନଙ୍କ ପାଇଁ ଏକ ମଜାଦାର ଗଣିତ ଖେଳ। SB ଗଣିତ ବିଜ୍ଞ ସହିତ ମିଶାଣ, ଫେଡାଣ, ଗୁଣନ ଏବଂ ହରଣ ଶିଖନ୍ତୁ।"
+            },
+            english: {
+                title: "SB Math Wizard", scoreLabel: "Score", incorrectLabel: "Wrong", langText: "ଓଡ଼ିଆ",
+                opLabel: "Type:", ops: { mix: "Mix", "+": "Addition", "-": "Subtraction", "×": "Multiplication", "÷": "Division" },
+                diffLabel: "Level:", diffs: { easy: "Easy", medium: "Medium", hard: "Hard" },
+                instruction: "Choose your answer", nextBtn: "Next Question", skipBtn: "Skip Question",
+                offlineMsg: "No problem, you can use it even when you are offline",
+                onlineMsg: "Your score is saved in your browser",
+                metaDesc: "A fun math game for kids. Learn addition, subtraction, multiplication, and division with SB Math Wizard."
+            }
+        };
+        const difficultySettings = { easy: { add: 20, sub: 20, mul: 10, div: 5 }, medium: { add: 100, sub: 100, mul: 15, div: 10 }, hard: { add: 1000, sub: 1000, mul: 30, div: 25 } };
+
+        // --- UTILITY & STATE FUNCTIONS ---
+        const toOdiaNum = num => (state.lang === 'english') ? num.toString() : String(num).split('').map(d => odiaNumerals[parseInt(d)] || d).join('');
+        const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+        
+        const saveState = () => { for (let key in state) localStorage.setItem(`sbGanita.${key}`, state[key]); };
+        const loadState = () => {
+            for (let key in state) state[key] = localStorage.getItem(`sbGanita.${key}`) || state[key];
+            state.score = parseInt(state.score); state.incorrectScore = parseInt(state.incorrectScore);
+            const params = new URLSearchParams(window.location.search);
+            const langParam = params.get('lang');
+            if (langParam === 'en') state.lang = 'english'; else if (langParam === 'or') state.lang = 'odia';
+            dom.difficultySelect.value = state.difficulty; dom.operationSelect.value = state.operation;
+        };
+        const updateURL = () => {
+            const langCode = state.lang === 'odia' ? 'or' : 'en';
+            const newUrl = `${window.location.pathname}?lang=${langCode}`;
+            window.history.pushState({ path: newUrl }, '', newUrl);
+        };
+
+        // --- CORE GAME LOGIC ---
+        const generateQuestion = () => {
+            if (nextQuestionTimerId) clearInterval(nextQuestionTimerId);
+            const op = (state.operation === 'mix') ? operators[Math.floor(Math.random() * operators.length)] : state.operation;
+            const level = difficultySettings[state.difficulty];
+            let num1, num2, answer;
+            switch (op) {
+                case '+': num1 = Math.floor(Math.random()*level.add)+1; num2 = Math.floor(Math.random()*level.add)+1; answer = num1+num2; break;
+                case '-': num1 = Math.floor(Math.random()*level.sub)+1; num2 = Math.floor(Math.random()*num1)+1; answer = num1-num2; break;
+                case '×': num1 = Math.floor(Math.random()*level.mul)+2; num2 = Math.floor(Math.random()*10)+1; answer = num1*num2; break;
+                case '÷': const r = Math.floor(Math.random()*level.div)+2; num2=Math.floor(Math.random()*9)+2; num1=r*num2; answer=r; break;
+            }
+            const options = new Set([answer]);
+            while (options.size < 4) {
+                const range = Math.max(10, Math.floor(answer * 0.5));
+                const wrongOption = answer + Math.floor(Math.random() * range * 2) - range;
+                if (wrongOption !== answer && wrongOption >= 0) options.add(wrongOption);
+            }
+            currentQuestion = { text: `${toOdiaNum(num1)} ${op} ${toOdiaNum(num2)} = ?`, answer, options: shuffle([...options]) };
+            displayQuestion();
+        };
+
+        const displayQuestion = () => {
+            dom.question.textContent = currentQuestion.text;
+            dom.optionsContainer.innerHTML = '';
+            currentQuestion.options.forEach(option => {
+                const button = document.createElement('button');
+                button.className = 'option-btn';
+                button.textContent = toOdiaNum(option);
+                button.dataset.value = option;
+                button.addEventListener('click', handleOptionClick, { once: true });
+                dom.optionsContainer.appendChild(button);
+            });
+            dom.nextBtn.style.display = 'none';
+            dom.skipBtn.style.display = 'block';
+            dom.nextBtn.textContent = translations[state.lang].nextBtn;
+        };
+
+        const startNextQuestionTimer = () => {
+            let countdown = 5;
+            const baseNextBtnText = translations[state.lang].nextBtn;
+            dom.nextBtn.textContent = `${baseNextBtnText} (${toOdiaNum(countdown)})`;
+            nextQuestionTimerId = setInterval(() => {
+                countdown--;
+                if (countdown >= 0) {
+                    dom.nextBtn.textContent = `${baseNextBtnText} (${toOdiaNum(countdown)})`;
+                } else {
+                    clearInterval(nextQuestionTimerId);
+                    generateQuestion();
+                }
+            }, 1000);
+        };
+
+        const handleOptionClick = e => {
+            const selectedBtn = e.target;
+            const chosenAnswer = parseInt(selectedBtn.dataset.value);
+            const allBtns = dom.optionsContainer.querySelectorAll('.option-btn');
+            allBtns.forEach(btn => btn.classList.add('disabled'));
+            
+            selectedBtn.classList.add('selected');
+            if (chosenAnswer === currentQuestion.answer) {
+                state.score++;
+                selectedBtn.classList.add('correct');
+            } else {
+                state.incorrectScore++;
+                selectedBtn.classList.add('wrong');
+                allBtns.forEach(btn => { if (parseInt(btn.dataset.value) === currentQuestion.answer) btn.classList.add('correct-answer'); });
+            }
+            updateAllScoresDisplay();
+            saveState();
+            dom.nextBtn.style.display = 'block';
+            dom.skipBtn.style.display = 'none';
+            startNextQuestionTimer();
+        };
+        const updateAllScoresDisplay = () => { dom.scoreValue.textContent = toOdiaNum(state.score); dom.incorrectScoreValue.textContent = toOdiaNum(state.incorrectScore); };
+
+        // --- UI & TRANSLATION ---
+        const applyTheme = () => { document.body.dataset.theme = state.theme; dom.themeSwitch.querySelector('i').className = state.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'; };
+        const toggleTheme = () => { state.theme = (state.theme === 'light' ? 'dark' : 'light'); applyTheme(); saveState(); };
+
+        const applyLanguage = () => {
+            const T = translations[state.lang];
+            document.documentElement.lang = state.lang === 'odia' ? 'or' : 'en';
+            dom.title.textContent = T.title; dom.scoreLabel.textContent = T.scoreLabel; dom.incorrectScoreLabel.textContent = T.incorrectLabel;
+            dom.langText.textContent = T.langText; dom.operationLabel.textContent = T.opLabel; dom.difficultyLabel.textContent = T.diffLabel;
+            dom.instruction.textContent = T.instruction; dom.nextBtn.textContent = T.nextBtn; dom.skipBtn.textContent = T.skipBtn;
+            dom.metaDescription.setAttribute('content', T.metaDesc);
+            for (const opt of dom.difficultySelect.options) opt.textContent = T.diffs[opt.value];
+            for (const opt of dom.operationSelect.options) opt.textContent = T.ops[opt.value];
+            updateAllScoresDisplay();
+            if (currentQuestion.text) displayQuestion();
+            updateFooterMessage();
+        };
+        const toggleLanguage = () => { state.lang = (state.lang === 'odia' ? 'english' : 'odia'); updateURL(); applyLanguage(); saveState(); };
+        
+        const updateFooterMessage = () => {
+            if (sessionStorage.getItem('footerDismissed') === 'true') { dom.footerBar.classList.remove('visible'); return; }
+            const msgKey = navigator.onLine ? 'onlineMsg' : 'offlineMsg';
+            dom.footerMsgText.textContent = translations[state.lang][msgKey];
+            dom.footerBar.classList.add('visible');
+        };
+
+        // --- EVENT LISTENERS ---
+        dom.themeSwitch.addEventListener('click', toggleTheme);
+        dom.langSwitch.addEventListener('click', toggleLanguage);
+        dom.nextBtn.addEventListener('click', generateQuestion);
+        dom.skipBtn.addEventListener('click', generateQuestion);
+        dom.difficultySelect.addEventListener('change', e => { state.difficulty = e.target.value; saveState(); generateQuestion(); });
+        dom.operationSelect.addEventListener('change', e => { state.operation = e.target.value; saveState(); generateQuestion(); });
+        window.addEventListener('online', updateFooterMessage); window.addEventListener('offline', updateFooterMessage);
+        dom.closeFooterMsg.addEventListener('click', () => { dom.footerBar.classList.remove('visible'); sessionStorage.setItem('footerDismissed', 'true'); });
+
+        // --- INITIALIZATION ---
+        const init = () => { loadState(); applyTheme(); applyLanguage(); updateURL(); generateQuestion(); };
+        init();
+    });
+    </script>
+</body>
+</html>
