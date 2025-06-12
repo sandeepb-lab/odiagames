@@ -4,26 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SB ଗଣିତ ବିଜ୍ଞ</title>
+    <meta name="theme-color" content="#3B82F6"/>
+
+    <!-- Link to Manifest File -->
+    <link rel="manifest" href="manifest.json">
 
     <!-- SEO and Metadata -->
     <meta id="meta-description" name="description" content="ପିଲାମାନଙ୍କ ପାଇଁ ଏକ ମଜାଦାର ଗଣିତ ଖେଳ। SB ଗଣିତ ବିଜ୍ଞ ସହିତ ମିଶାଣ, ଫେଡାଣ, ଗୁଣନ ଏବଂ ହରଣ ଶିଖନ୍ତୁ।">
     <meta name="keywords" content="Odia math game, ganita bigyan, math for kids, odia learning, ଗଣିତ ଖେଳ, ପିଲାଙ୍କ ପାଇଁ ଗଣିତ, SB Ganita Bigyan">
-    <meta name="author" content="SB Ganita Bigyan">
-
-    <!-- Open Graph / Facebook -->
-    <meta property="og:type" content="website">
-    <meta property="og:url" content="https://your-website-url.com/"> <!-- Replace with your actual URL -->
-    <meta property="og:title" content="SB ଗଣିତ ବିଜ୍ଞ - Odia Math Game">
-    <meta property="og:description" content="A fun and interactive math game for kids to learn addition, subtraction, multiplication, and division in Odia.">
-    <meta property="og:image" content="https://your-website-url.com/preview-image.png"> <!-- Replace with your actual image URL -->
-
-    <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="https://your-website-url.com/"> <!-- Replace with your actual URL -->
-    <meta property="twitter:title" content="SB ଗଣିତ ବିଜ୍ଞ - Odia Math Game">
-    <meta property="twitter:description" content="A fun and interactive math game for kids to learn addition, subtraction, multiplication, and division in Odia.">
-    <meta property="twitter:image" content="https://your-website-url.com/preview-image.png"> <!-- Replace with your actual image URL -->
-
+    
     <!-- Fonts and Icons -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -59,12 +48,14 @@
         .title-group { display: flex; align-items: center; gap: 0.75rem; }
         .logo { font-size: 2rem; }
         .title { font-size: 1.8rem; font-weight: 700; }
+        #back-btn { background: none; border: none; color: var(--header-text); font-size: 1.5rem; cursor: pointer; padding: 0.5rem; margin-right: 0.5rem; text-decoration: none; }
         .scores-group { display: flex; gap: 1.5rem; text-align: right; }
-        .score-container { font-size: 1.1rem; font-weight: 600; }
+        .score-container { font-size: 1.1rem; font-weight: 600; white-space: nowrap;}
         #score-value { color: #A7F3D0; }
         #incorrect-score-value { color: #FECACA; }
         main { padding: 2rem 0; }
-        .controls-panel { background-color: var(--card-bg); border-radius: 12px; padding: 1rem 1.5rem; margin-bottom: 2rem; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .controls-panel { background-color: var(--card-bg); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; display: flex; flex-direction: column; gap: 1.5rem; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+        .top-controls, .bottom-controls { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem; }
         .control-group { display: flex; align-items: center; gap: 1.5rem; }
         .control-btn, .lang-btn { background: none; border: none; color: var(--text-muted-color); cursor: pointer; font-size: 1.5rem; transition: color 0.2s; }
         .control-btn:hover, .lang-btn:hover { color: var(--text-color); }
@@ -72,8 +63,13 @@
         .lang-btn span { font-weight: 600; }
         .select-group { display: flex; align-items: center; gap: 0.75rem; flex-wrap: wrap; }
         .select-group label { color: var(--text-muted-color); font-weight: 600; }
-        .select-group select { background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.4rem 0.8rem; font-family: inherit; font-weight: 600; cursor: pointer; }
-        .game-card { background-color: var(--card-bg); border-radius: 16px; padding: 2.5rem; text-align: center; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07); }
+        .select-group select, .select-group input { background-color: var(--bg-color); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 6px; padding: 0.4rem 0.8rem; font-family: inherit; font-weight: 600; cursor: pointer; }
+        .game-card { background-color: var(--card-bg); border-radius: 16px; padding: 2.5rem; text-align: center; box-shadow: 0 10px 15px -3px rgba(0,0,0,0.07); position: relative; overflow: hidden; }
+        #game-timer-display { font-size: 1.5rem; font-weight: 700; color: var(--secondary-btn-bg); margin-bottom: 1rem; display: none; }
+        #game-over-display { display: none; position: absolute; top:0; left:0; right:0; bottom:0; background: rgba(255,255,255,0.9); backdrop-filter: blur(5px); z-index: 10; border-radius: 16px; flex-direction: column; justify-content: center; align-items: center; }
+        [data-theme="dark"] #game-over-display { background: rgba(15, 23, 42, 0.9); }
+        #game-over-display h3 { font-size: 2.5rem; }
+        #game-over-display p { font-size: 1.25rem; margin: 1rem 0 2rem 0; }
         #instruction { color: var(--text-muted-color); font-size: 1.1rem; margin-bottom: 1.5rem; }
         #question { font-size: 3.5rem; font-weight: 700; margin-bottom: 3rem; word-wrap: break-word; }
         .options-container { display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; margin-bottom: 2.5rem; }
@@ -84,23 +80,28 @@
         .option-btn.selected.wrong { background-color: var(--wrong-color); border-color: #fff; }
         .option-btn.correct-answer { background-color: var(--correct-color); }
         .action-buttons { display: flex; justify-content: center; align-items: center; gap: 1rem; flex-wrap: wrap; min-height: 50px; }
-        #next-question-btn, #skip-question-btn { color: white; border: none; border-radius: 10px; padding: 0.8rem 2rem; font-size: 1.2rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s, transform 0.2s; font-family: inherit; }
+        #next-question-btn, #skip-question-btn, #play-again-btn { color: white; border: none; border-radius: 10px; padding: 0.8rem 2rem; font-size: 1.2rem; font-weight: 600; cursor: pointer; transition: background-color 0.2s, transform 0.2s; font-family: inherit; }
         #next-question-btn { background-color: var(--secondary-btn-bg); display: none; }
         #skip-question-btn { background-color: var(--skip-btn-bg); display: block; }
-        #next-question-btn:hover, #skip-question-btn:hover { transform: scale(1.05); }
-        .footer-message-bar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--card-bg); color: var(--text-color); padding: 1rem; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 1rem; transition: transform 0.3s ease; transform: translateY(100%); z-index: 1000; }
-        .footer-message-bar.visible { transform: translateY(0); }
+        #play-again-btn { background-color: var(--correct-color); }
+        #next-question-btn:hover, #skip-question-btn:hover, #play-again-btn:hover { transform: scale(1.05); }
+        .footer-status-bar { position: fixed; bottom: 0; left: 0; width: 100%; background-color: var(--card-bg); color: var(--text-color); padding: 1rem; box-shadow: 0 -4px 6px -1px rgba(0,0,0,0.1); display: flex; justify-content: center; align-items: center; gap: 1rem; transition: transform 0.3s ease; transform: translateY(100%); z-index: 1000; }
+        .footer-status-bar.visible { transform: translateY(0); }
         .close-footer-msg { font-size: 1.5rem; line-height: 1; cursor: pointer; color: var(--text-muted-color); }
-        @media (max-width: 768px) { .title { font-size: 1.5rem; } .header-content { flex-direction: column; gap: 0.75rem; } .scores-group { width: 100%; justify-content: space-around; } .controls-panel { flex-direction: column; align-items: stretch; gap: 1.5rem; } .select-group { justify-content: space-between; } .game-card { padding: 1.5rem; } #question { font-size: 2.8rem; } .option-btn { font-size: 1.8rem; } }
+        #app-footer { text-align: center; padding: 2rem 1rem; margin-top: 3rem; color: var(--text-muted-color); font-size: 0.9em; border-top: 1px solid var(--border-color); transition: color 0.3s, border-color 0.3s; }
+        #app-footer a { font-weight: 600; color: var(--text-color); text-decoration: none; transition: color 0.2s; }
+        #app-footer a:hover { color: var(--primary-btn-bg); }
+        @media (max-width: 768px) { .header-content { flex-direction: row; gap: 1rem; } .title-group { flex-grow: 1; } .scores-group { flex-grow: 0; } .top-controls, .bottom-controls { flex-direction: column; align-items: stretch; gap: 1.5rem; } .game-card { padding: 1.5rem; } #question { font-size: 2.8rem; } .option-btn { font-size: 1.8rem; } }
+        @media (max-width: 480px) { .header-content { flex-wrap: wrap; } .title-group { width: 100%; margin-bottom: 0.5rem; } .scores-group { width: 100%; justify-content: space-around; } #question { font-size: 2.2rem; } .option-btn { font-size: 1.5rem; } .title { font-size: 1.3rem; } .logo, #back-btn { font-size: 1.3rem; } }
     </style>
 </head>
-
 <body data-theme="light">
-
+    <!-- The entire body content is the same as the last version... -->
     <header class="app-header">
         <div class="container">
             <div class="header-content">
                 <div class="title-group">
+                    <a href="https://imsbg.github.io/odiagames/" id="back-btn"><i class="fa-solid fa-arrow-left"></i></a>
                     <i class="fa-solid fa-calculator logo"></i>
                     <h1 class="title">SB ଗଣିତ ବିଜ୍ଞ</h1>
                 </div>
@@ -115,222 +116,229 @@
             </div>
         </div>
     </header>
-
     <main>
         <div class="container">
             <div class="controls-panel">
-                <div class="control-group">
-                    <button class="lang-btn" id="lang-switch"><i class="fa-solid fa-language"></i><span id="lang-text"></span></button>
-                    <button class="control-btn" id="theme-switch" title="Toggle Theme"><i class="fas fa-moon"></i></button>
+                <div class="top-controls">
+                    <div class="control-group">
+                        <button class="lang-btn" id="lang-switch"><i class="fa-solid fa-language"></i><span id="lang-text"></span></button>
+                        <button class="control-btn" id="theme-switch"><i class="fas fa-moon"></i></button>
+                        <button class="control-btn" id="reset-score-btn"><i class="fa-solid fa-rotate-left"></i></button>
+                    </div>
+                    <div class="select-group">
+                        <label id="operation-label" for="operation-select"></label>
+                        <select id="operation-select"><option value="mix"></option><option value="+"></option><option value="-"></option><option value="×"></option><option value="÷"></option></select>
+                        <label id="difficulty-label" for="difficulty-select"></label>
+                        <select id="difficulty-select"><option value="easy"></option><option value="medium"></option><option value="hard"></option></select>
+                    </div>
                 </div>
-                <div class="select-group">
-                    <label id="operation-label" for="operation-select"></label>
-                    <select id="operation-select">
-                        <option value="mix"></option><option value="+"></option><option value="-"></option><option value="×"></option><option value="÷"></option>
-                    </select>
-                    <label id="difficulty-label" for="difficulty-select"></label>
-                    <select id="difficulty-select">
-                        <option value="easy"></option><option value="medium"></option><option value="hard"></option>
-                    </select>
+                <div class="bottom-controls">
+                    <div class="select-group">
+                        <input type="checkbox" id="timer-challenge-checkbox">
+                        <label for="timer-challenge-checkbox" id="timer-challenge-label"></label>
+                    </div>
+                    <div class="select-group" id="timer-duration-group" style="display: none;">
+                        <label for="timer-duration-select" id="timer-duration-label"></label>
+                        <select id="timer-duration-select"><option value="60">1</option><option value="120">2</option><option value="180">3</option><option value="240">4</option><option value="300">5</option></select>
+                    </div>
                 </div>
             </div>
-
             <div class="game-card">
-                <h2 id="instruction"></h2>
-                <div id="question"></div>
-                <div class="options-container" id="options-container"></div>
-                <div class="action-buttons">
-                    <button id="skip-question-btn"></button>
-                    <button id="next-question-btn"></button>
-                </div>
+                <div id="game-over-display"><h3 id="game-over-title"></h3><p id="game-over-summary"></p><button id="play-again-btn"></button></div>
+                <div id="game-timer-display"></div>
+                <h2 id="instruction"></h2><div id="question"></div><div class="options-container" id="options-container"></div>
+                <div class="action-buttons"><button id="skip-question-btn"></button><button id="next-question-btn"></button></div>
             </div>
         </div>
     </main>
-
-    <footer class="footer-message-bar" id="footer-bar">
-        <span id="footer-message-text"></span>
-        <span class="close-footer-msg" id="close-footer-msg" title="Close">×</span>
-    </footer>
+    <footer id="app-footer"></footer>
+    <div class="footer-status-bar" id="footer-bar">
+        <span id="footer-message-text"></span><span class="close-footer-msg" id="close-footer-msg" title="Close">×</span>
+    </div>
 
     <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        // --- DOM ELEMENTS ---
-        const dom = {
-            title: document.querySelector('.title'), scoreLabel: document.getElementById('score-label'), scoreValue: document.getElementById('score-value'),
-            incorrectScoreLabel: document.getElementById('incorrect-score-label'), incorrectScoreValue: document.getElementById('incorrect-score-value'),
-            langSwitch: document.getElementById('lang-switch'), langText: document.getElementById('lang-text'), themeSwitch: document.getElementById('theme-switch'),
-            operationLabel: document.getElementById('operation-label'), operationSelect: document.getElementById('operation-select'),
-            difficultyLabel: document.getElementById('difficulty-label'), difficultySelect: document.getElementById('difficulty-select'),
-            instruction: document.getElementById('instruction'), question: document.getElementById('question'), optionsContainer: document.getElementById('options-container'),
-            nextBtn: document.getElementById('next-question-btn'), skipBtn: document.getElementById('skip-question-btn'), footerBar: document.getElementById('footer-bar'),
-            footerMsgText: document.getElementById('footer-message-text'), closeFooterMsg: document.getElementById('close-footer-msg'), metaDescription: document.getElementById('meta-description')
-        };
+        // Game Logic is the same...
+        document.addEventListener('DOMContentLoaded', () => {
+            const dom = {
+                backBtn: document.getElementById('back-btn'), title: document.querySelector('.title'), scoreLabel: document.getElementById('score-label'), scoreValue: document.getElementById('score-value'), incorrectScoreLabel: document.getElementById('incorrect-score-label'), incorrectScoreValue: document.getElementById('incorrect-score-value'), langSwitch: document.getElementById('lang-switch'), langText: document.getElementById('lang-text'), themeSwitch: document.getElementById('theme-switch'), resetBtn: document.getElementById('reset-score-btn'), operationLabel: document.getElementById('operation-label'), operationSelect: document.getElementById('operation-select'), difficultyLabel: document.getElementById('difficulty-label'), difficultySelect: document.getElementById('difficulty-select'), instruction: document.getElementById('instruction'), question: document.getElementById('question'), optionsContainer: document.getElementById('options-container'), nextBtn: document.getElementById('next-question-btn'), skipBtn: document.getElementById('skip-question-btn'), footerBar: document.getElementById('footer-bar'), footerMsgText: document.getElementById('footer-message-text'), closeFooterMsg: document.getElementById('close-footer-msg'), metaDescription: document.getElementById('meta-description'), timerChallengeCheckbox: document.getElementById('timer-challenge-checkbox'), timerChallengeLabel: document.getElementById('timer-challenge-label'), timerDurationGroup: document.getElementById('timer-duration-group'), timerDurationLabel: document.getElementById('timer-duration-label'), timerDurationSelect: document.getElementById('timer-duration-select'), gameTimerDisplay: document.getElementById('game-timer-display'), gameOverDisplay: document.getElementById('game-over-display'), gameOverTitle: document.getElementById('game-over-title'), gameOverSummary: document.getElementById('game-over-summary'), playAgainBtn: document.getElementById('play-again-btn'), appFooter: document.getElementById('app-footer'),
+            };
 
-        // --- STATE ---
-        let state = { score: 0, incorrectScore: 0, lang: 'odia', theme: 'light', difficulty: 'easy', operation: 'mix' };
-        let currentQuestion = {};
-        let nextQuestionTimerId = null;
+            let state = { score: 0, incorrectScore: 0, lang: 'odia', theme: 'light', difficulty: 'easy', operation: 'mix' };
+            let currentQuestion = {}, nextQuestionTimerId = null, gameTimerId = null;
 
-        // --- DATA & CONFIG ---
-        const odiaNumerals = ['୦', '୧', '୨', '୩', '୪', '୫', '୬', '୭', '୮', '୯'];
-        const operators = ['+', '-', '×', '÷'];
-        const translations = {
-            odia: {
-                title: "SB ଗଣିତ ବିଜ୍ଞ", scoreLabel: "ସ୍କୋର୍", incorrectLabel: "ଭୁଲ୍", langText: "English",
-                opLabel: "ପ୍ରକାର:", ops: { mix: "ମିଶ୍ରଣ", "+": "ମିଶାଣ", "-": "ଫେଡାଣ", "×": "ଗୁଣନ", "÷": "ହରଣ" },
-                diffLabel: "ସ୍ତର:", diffs: { easy: "ସହଜ", medium: "ମଧ୍ୟମ", hard: "କଠିନ" },
-                instruction: "ଆପଣଙ୍କର ଉତ୍ତର ବାଛନ୍ତୁ", nextBtn: "ପରବର୍ତ୍ତୀ ପ୍ରଶ୍ନ", skipBtn: "ପ୍ରଶ୍ନ ଛାଡନ୍ତୁ",
-                offlineMsg: "କୌଣସି ଅସୁବିଧା ନାହିଁ, ଆପଣ ଅଫଲାଇନରେ ମଧ୍ୟ ଏହାକୁ ବ୍ୟବହାର କରିପାରିବେ",
-                onlineMsg: "ଆପଣଙ୍କ ସ୍କୋର୍ ଆପଣଙ୍କ ବ୍ରାଉଜରରେ ସେଭ୍ ହୋଇଛି",
-                metaDesc: "ପିଲାମାନଙ୍କ ପାଇଁ ଏକ ମଜାଦାର ଗଣିତ ଖେଳ। SB ଗଣିତ ବିଜ୍ଞ ସହିତ ମିଶାଣ, ଫେଡାଣ, ଗୁଣନ ଏବଂ ହରଣ ଶିଖନ୍ତୁ।"
-            },
-            english: {
-                title: "SB Math Wizard", scoreLabel: "Score", incorrectLabel: "Wrong", langText: "ଓଡ଼ିଆ",
-                opLabel: "Type:", ops: { mix: "Mix", "+": "Addition", "-": "Subtraction", "×": "Multiplication", "÷": "Division" },
-                diffLabel: "Level:", diffs: { easy: "Easy", medium: "Medium", hard: "Hard" },
-                instruction: "Choose your answer", nextBtn: "Next Question", skipBtn: "Skip Question",
-                offlineMsg: "No problem, you can use it even when you are offline",
-                onlineMsg: "Your score is saved in your browser",
-                metaDesc: "A fun math game for kids. Learn addition, subtraction, multiplication, and division with SB Math Wizard."
-            }
-        };
-        const difficultySettings = { easy: { add: 20, sub: 20, mul: 10, div: 5 }, medium: { add: 100, sub: 100, mul: 15, div: 10 }, hard: { add: 1000, sub: 1000, mul: 30, div: 25 } };
-
-        // --- UTILITY & STATE FUNCTIONS ---
-        const toOdiaNum = num => (state.lang === 'english') ? num.toString() : String(num).split('').map(d => odiaNumerals[parseInt(d)] || d).join('');
-        const shuffle = a => { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
-        
-        const saveState = () => { for (let key in state) localStorage.setItem(`sbGanita.${key}`, state[key]); };
-        const loadState = () => {
-            for (let key in state) state[key] = localStorage.getItem(`sbGanita.${key}`) || state[key];
-            state.score = parseInt(state.score); state.incorrectScore = parseInt(state.incorrectScore);
-            const params = new URLSearchParams(window.location.search);
-            const langParam = params.get('lang');
-            if (langParam === 'en') state.lang = 'english'; else if (langParam === 'or') state.lang = 'odia';
-            dom.difficultySelect.value = state.difficulty; dom.operationSelect.value = state.operation;
-        };
-        const updateURL = () => {
-            const langCode = state.lang === 'odia' ? 'or' : 'en';
-            const newUrl = `${window.location.pathname}?lang=${langCode}`;
-            window.history.pushState({ path: newUrl }, '', newUrl);
-        };
-
-        // --- CORE GAME LOGIC ---
-        const generateQuestion = () => {
-            if (nextQuestionTimerId) clearInterval(nextQuestionTimerId);
-            const op = (state.operation === 'mix') ? operators[Math.floor(Math.random() * operators.length)] : state.operation;
-            const level = difficultySettings[state.difficulty];
-            let num1, num2, answer;
-            switch (op) {
-                case '+': num1 = Math.floor(Math.random()*level.add)+1; num2 = Math.floor(Math.random()*level.add)+1; answer = num1+num2; break;
-                case '-': num1 = Math.floor(Math.random()*level.sub)+1; num2 = Math.floor(Math.random()*num1)+1; answer = num1-num2; break;
-                case '×': num1 = Math.floor(Math.random()*level.mul)+2; num2 = Math.floor(Math.random()*10)+1; answer = num1*num2; break;
-                case '÷': const r = Math.floor(Math.random()*level.div)+2; num2=Math.floor(Math.random()*9)+2; num1=r*num2; answer=r; break;
-            }
-            const options = new Set([answer]);
-            while (options.size < 4) {
-                const range = Math.max(10, Math.floor(answer * 0.5));
-                const wrongOption = answer + Math.floor(Math.random() * range * 2) - range;
-                if (wrongOption !== answer && wrongOption >= 0) options.add(wrongOption);
-            }
-            currentQuestion = { text: `${toOdiaNum(num1)} ${op} ${toOdiaNum(num2)} = ?`, answer, options: shuffle([...options]) };
-            displayQuestion();
-        };
-
-        const displayQuestion = () => {
-            dom.question.textContent = currentQuestion.text;
-            dom.optionsContainer.innerHTML = '';
-            currentQuestion.options.forEach(option => {
-                const button = document.createElement('button');
-                button.className = 'option-btn';
-                button.textContent = toOdiaNum(option);
-                button.dataset.value = option;
-                button.addEventListener('click', handleOptionClick, { once: true });
-                dom.optionsContainer.appendChild(button);
-            });
-            dom.nextBtn.style.display = 'none';
-            dom.skipBtn.style.display = 'block';
-            dom.nextBtn.textContent = translations[state.lang].nextBtn;
-        };
-
-        const startNextQuestionTimer = () => {
-            let countdown = 5;
-            const baseNextBtnText = translations[state.lang].nextBtn;
-            dom.nextBtn.textContent = `${baseNextBtnText} (${toOdiaNum(countdown)})`;
-            nextQuestionTimerId = setInterval(() => {
-                countdown--;
-                if (countdown >= 0) {
-                    dom.nextBtn.textContent = `${baseNextBtnText} (${toOdiaNum(countdown)})`;
-                } else {
-                    clearInterval(nextQuestionTimerId);
-                    generateQuestion();
+            const translations = {
+                odia: {
+                    title: "SB ଗଣିତ ବିଜ୍ଞ", appName: "SB ଗଣିତ ବିଜ୍ଞ", scoreLabel: "ସ୍କୋର୍", incorrectLabel: "ଭୁଲ୍", langText: "English",
+                    opLabel: "ପ୍ରକାର:", ops: { mix: "ମିଶ୍ରଣ", "+": "ମିଶାଣ", "-": "ଫେଡାଣ", "×": "ଗୁଣନ", "÷": "ହରଣ" },
+                    diffLabel: "ସ୍ତର:", diffs: { easy: "ସହଜ", medium: "ମଧ୍ୟମ", hard: "କଠିନ" },
+                    instruction: "ଆପଣଙ୍କର ଉତ୍ତର ବାଛନ୍ତୁ", nextBtn: "ପରବର୍ତ୍ତୀ ପ୍ରଶ୍ନ", skipBtn: "ପ୍ରଶ୍ନ ଛାଡନ୍ତୁ",
+                    offlineMsg: "କୌଣସି ଅସୁବିଧା ନାହିଁ, ଆପଣ ଅଫଲାଇନରେ ମଧ୍ୟ ଏହାକୁ ବ୍ୟବହାର କରିପାରିବେ",
+                    onlineMsg: "ଆପଣଙ୍କ ସ୍କୋର୍ ଆପଣଙ୍କ ବ୍ରାଉଜରରେ ସେଭ୍ ହୋଇଛି",
+                    metaDesc: "ପିଲାମାନଙ୍କ ପାଇଁ ଏକ ମଜାଦାର ଗଣିତ ଖେଳ।",
+                    backBtnTitle: "ପଛକୁ ଯାଆନ୍ତୁ", resetBtnTitle: "ସ୍କୋର୍ ପୁନଃ ସେଟ୍ କରନ୍ତୁ", resetConfirm: "ଆପଣ ନିଶ୍ଚିତ ଯେ ଆପଣ ସ୍କୋର୍ ପୁନଃ ସେଟ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି?",
+                    timerChallenge: "ସମୟ ଚ୍ୟାଲେଞ୍ଜ", timerDuration: "ସମୟ (ମିନିଟ):", gameOverTitle: "ସମୟ ସମାପ୍ତ!",
+                    gameOverSummary: (s) => `ଆପଣ ${toOdiaNum(s)} ଟି ଠିକ୍ ଉତ୍ତର ଦେଇଛନ୍ତି।`, playAgain: "ପୁଣି ଖେଳନ୍ତୁ",
+                    footerText: (year, name) => `© ${year} <a href="https://imsbg.github.io/odiagames/" target="_blank">${name}</a>. ସର୍ବସ୍ବତ୍ବ ସଂରକ୍ଷିତ.`
+                },
+                english: {
+                    title: "SB Math Wizard", appName: "SB Math Wizard", scoreLabel: "Score", incorrectLabel: "Wrong", langText: "ଓଡ଼ିଆ",
+                    opLabel: "Type:", ops: { mix: "Mix", "+": "Addition", "-": "Subtraction", "×": "Multiplication", "÷": "Division" },
+                    diffLabel: "Level:", diffs: { easy: "Easy", medium: "Medium", hard: "Hard" },
+                    instruction: "Choose your answer", nextBtn: "Next Question", skipBtn: "Skip Question",
+                    offlineMsg: "No problem, you can use it even when you are offline",
+                    onlineMsg: "Your score is saved in your browser",
+                    metaDesc: "A fun math game for kids.",
+                    backBtnTitle: "Go Back", resetBtnTitle: "Reset Score", resetConfirm: "Are you sure you want to reset your score?",
+                    timerChallenge: "Timer Challenge", timerDuration: "Duration (min):", gameOverTitle: "Time's Up!",
+                    gameOverSummary: (s) => `You answered ${s} questions correctly.`, playAgain: "Play Again",
+                    footerText: (year, name) => `© ${year} <a href="https://imsbg.github.io/odiagames/" target="_blank">${name}</a>. All rights reserved.`
                 }
-            }, 1000);
-        };
-
-        const handleOptionClick = e => {
-            const selectedBtn = e.target;
-            const chosenAnswer = parseInt(selectedBtn.dataset.value);
-            const allBtns = dom.optionsContainer.querySelectorAll('.option-btn');
-            allBtns.forEach(btn => btn.classList.add('disabled'));
-            
-            selectedBtn.classList.add('selected');
-            if (chosenAnswer === currentQuestion.answer) {
-                state.score++;
-                selectedBtn.classList.add('correct');
-            } else {
-                state.incorrectScore++;
-                selectedBtn.classList.add('wrong');
-                allBtns.forEach(btn => { if (parseInt(btn.dataset.value) === currentQuestion.answer) btn.classList.add('correct-answer'); });
-            }
-            updateAllScoresDisplay();
-            saveState();
-            dom.nextBtn.style.display = 'block';
-            dom.skipBtn.style.display = 'none';
-            startNextQuestionTimer();
-        };
-        const updateAllScoresDisplay = () => { dom.scoreValue.textContent = toOdiaNum(state.score); dom.incorrectScoreValue.textContent = toOdiaNum(state.incorrectScore); };
-
-        // --- UI & TRANSLATION ---
-        const applyTheme = () => { document.body.dataset.theme = state.theme; dom.themeSwitch.querySelector('i').className = state.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'; };
-        const toggleTheme = () => { state.theme = (state.theme === 'light' ? 'dark' : 'light'); applyTheme(); saveState(); };
-
-        const applyLanguage = () => {
-            const T = translations[state.lang];
-            document.documentElement.lang = state.lang === 'odia' ? 'or' : 'en';
-            dom.title.textContent = T.title; dom.scoreLabel.textContent = T.scoreLabel; dom.incorrectScoreLabel.textContent = T.incorrectLabel;
-            dom.langText.textContent = T.langText; dom.operationLabel.textContent = T.opLabel; dom.difficultyLabel.textContent = T.diffLabel;
-            dom.instruction.textContent = T.instruction; dom.nextBtn.textContent = T.nextBtn; dom.skipBtn.textContent = T.skipBtn;
-            dom.metaDescription.setAttribute('content', T.metaDesc);
-            for (const opt of dom.difficultySelect.options) opt.textContent = T.diffs[opt.value];
-            for (const opt of dom.operationSelect.options) opt.textContent = T.ops[opt.value];
-            updateAllScoresDisplay();
-            if (currentQuestion.text) displayQuestion();
-            updateFooterMessage();
-        };
-        const toggleLanguage = () => { state.lang = (state.lang === 'odia' ? 'english' : 'odia'); updateURL(); applyLanguage(); saveState(); };
-        
-        const updateFooterMessage = () => {
-            if (sessionStorage.getItem('footerDismissed') === 'true') { dom.footerBar.classList.remove('visible'); return; }
-            const msgKey = navigator.onLine ? 'onlineMsg' : 'offlineMsg';
-            dom.footerMsgText.textContent = translations[state.lang][msgKey];
-            dom.footerBar.classList.add('visible');
-        };
-
-        // --- EVENT LISTENERS ---
-        dom.themeSwitch.addEventListener('click', toggleTheme);
-        dom.langSwitch.addEventListener('click', toggleLanguage);
-        dom.nextBtn.addEventListener('click', generateQuestion);
-        dom.skipBtn.addEventListener('click', generateQuestion);
-        dom.difficultySelect.addEventListener('change', e => { state.difficulty = e.target.value; saveState(); generateQuestion(); });
-        dom.operationSelect.addEventListener('change', e => { state.operation = e.target.value; saveState(); generateQuestion(); });
-        window.addEventListener('online', updateFooterMessage); window.addEventListener('offline', updateFooterMessage);
-        dom.closeFooterMsg.addEventListener('click', () => { dom.footerBar.classList.remove('visible'); sessionStorage.setItem('footerDismissed', 'true'); });
-
-        // --- INITIALIZATION ---
-        const init = () => { loadState(); applyTheme(); applyLanguage(); updateURL(); generateQuestion(); };
-        init();
-    });
+            };
+            const toOdiaNum = num => (state.lang === 'english') ? num.toString() : String(num).split('').map(d => ['୦', '୧', '୨', '୩', '୪', '୫', '୬', '୭', '୮', '୯'][parseInt(d)] || d).join('');
+            const saveState = () => { for (let key in state) localStorage.setItem(`sbGanita.${key}`, state[key]); };
+            const loadState = () => {
+                for (let key in state) state[key] = localStorage.getItem(`sbGanita.${key}`) || state[key];
+                state.score = parseInt(state.score) || 0; state.incorrectScore = parseInt(state.incorrectScore) || 0;
+                const params = new URLSearchParams(window.location.search);
+                if (params.get('lang') === 'en') state.lang = 'english'; else if (params.get('lang') === 'or') state.lang = 'odia';
+                dom.difficultySelect.value = state.difficulty; dom.operationSelect.value = state.operation;
+            };
+            const generateQuestion = () => {
+                if (nextQuestionTimerId) clearInterval(nextQuestionTimerId);
+                const op = (state.operation === 'mix') ? ['+', '-', '×', '÷'][Math.floor(Math.random() * 4)] : state.operation;
+                const level = { easy: {add:20,sub:20,mul:10,div:5}, medium:{add:100,sub:100,mul:15,div:10}, hard:{add:1000,sub:1000,mul:30,div:25}}[state.difficulty];
+                let num1, num2, answer;
+                switch (op) {
+                    case '+': num1 = Math.floor(Math.random()*level.add)+1; num2 = Math.floor(Math.random()*level.add)+1; answer = num1+num2; break;
+                    case '-': num1 = Math.floor(Math.random()*level.sub)+5; num2 = Math.floor(Math.random()*(num1-1))+1; answer = num1-num2; break;
+                    case '×': num1 = Math.floor(Math.random()*level.mul)+2; num2 = Math.floor(Math.random()*10)+1; answer = num1*num2; break;
+                    case '÷': const r = Math.floor(Math.random()*level.div)+2; num2=Math.floor(Math.random()*9)+2; num1=r*num2; answer=r; break;
+                }
+                const options = new Set([answer]);
+                while (options.size < 4) {
+                    const wrongOption = answer + Math.floor(Math.random() * 20) - 10;
+                    if (wrongOption !== answer && wrongOption >= 0 && !options.has(wrongOption)) options.add(wrongOption);
+                }
+                currentQuestion = { text: `${toOdiaNum(num1)} ${op} ${toOdiaNum(num2)} = ?`, answer, options: [...options].sort(() => Math.random() - 0.5) };
+                displayQuestion();
+            };
+            const displayQuestion = () => {
+                dom.question.textContent = currentQuestion.text; dom.optionsContainer.innerHTML = '';
+                currentQuestion.options.forEach(option => {
+                    const button = document.createElement('button');
+                    button.className = 'option-btn'; button.textContent = toOdiaNum(option); button.dataset.value = option;
+                    button.addEventListener('click', handleOptionClick);
+                    dom.optionsContainer.appendChild(button);
+                });
+                dom.nextBtn.style.display = 'none'; dom.skipBtn.style.display = 'block';
+                dom.nextBtn.textContent = translations[state.lang].nextBtn;
+            };
+            const handleOptionClick = e => {
+                const allBtns = dom.optionsContainer.querySelectorAll('.option-btn');
+                allBtns.forEach(btn => { btn.classList.add('disabled'); btn.removeEventListener('click', handleOptionClick); });
+                const selectedBtn = e.currentTarget, chosenAnswer = parseInt(selectedBtn.dataset.value);
+                selectedBtn.classList.add('selected');
+                if (chosenAnswer === currentQuestion.answer) { state.score++; selectedBtn.classList.add('correct'); } 
+                else { state.incorrectScore++; selectedBtn.classList.add('wrong'); allBtns.forEach(btn => { if (parseInt(btn.dataset.value) === currentQuestion.answer) btn.classList.add('correct-answer'); }); }
+                updateAllScoresDisplay(); 
+                if (!dom.timerChallengeCheckbox.checked) { saveState(); }
+                if (dom.timerChallengeCheckbox.checked) { setTimeout(generateQuestion, 500); } 
+                else { dom.nextBtn.style.display = 'block'; dom.skipBtn.style.display = 'none'; startNextQuestionTimer(); }
+            };
+            const startNextQuestionTimer = () => {
+                let countdown = 5;
+                const baseText = translations[state.lang].nextBtn;
+                dom.nextBtn.textContent = `${baseText} (${toOdiaNum(countdown)})`;
+                nextQuestionTimerId = setInterval(() => {
+                    countdown--;
+                    if (countdown >= 0) dom.nextBtn.textContent = `${baseText} (${toOdiaNum(countdown)})`;
+                    else { clearInterval(nextQuestionTimerId); generateQuestion(); }
+                }, 1000);
+            };
+            const resetScores = (confirmReset = true) => {
+                if (confirmReset && !confirm(translations[state.lang].resetConfirm)) return;
+                state.score = 0; state.incorrectScore = 0;
+                updateAllScoresDisplay(); saveState();
+            };
+            const applyLanguage = () => {
+                const T = translations[state.lang];
+                document.documentElement.lang = state.lang === 'odia' ? 'or' : 'en';
+                dom.title.textContent = T.title; dom.scoreLabel.textContent = T.scoreLabel; dom.incorrectScoreLabel.textContent = T.incorrectLabel;
+                dom.langText.textContent = T.langText; dom.operationLabel.textContent = T.opLabel; dom.difficultyLabel.textContent = T.diffLabel;
+                dom.instruction.textContent = T.instruction; dom.nextBtn.textContent = T.nextBtn; dom.skipBtn.textContent = T.skipBtn;
+                dom.metaDescription.setAttribute('content', T.metaDesc); dom.backBtn.title = T.backBtnTitle; dom.resetBtn.title = T.resetBtnTitle;
+                for (const opt of dom.difficultySelect.options) opt.textContent = T.diffs[opt.value];
+                for (const opt of dom.operationSelect.options) opt.textContent = T.ops[opt.value];
+                for (const opt of dom.timerDurationSelect.options) {
+                    const minuteValue = parseInt(opt.value) / 60;
+                    opt.textContent = toOdiaNum(minuteValue);
+                }
+                dom.timerChallengeLabel.textContent = T.timerChallenge; dom.timerDurationLabel.textContent = T.timerDuration;
+                dom.playAgainBtn.textContent = T.playAgain; dom.gameOverTitle.textContent = T.gameOverTitle;
+                const year = new Date().getFullYear();
+                dom.appFooter.innerHTML = T.footerText(toOdiaNum(year), T.appName);
+                updateAllScoresDisplay();
+            };
+            const startGame = () => {
+                if (gameTimerId) clearInterval(gameTimerId); if (nextQuestionTimerId) clearInterval(nextQuestionTimerId);
+                if(dom.timerChallengeCheckbox.checked) {
+                    state.score = 0; state.incorrectScore = 0;
+                    updateAllScoresDisplay();
+                    startGameTimer(parseInt(dom.timerDurationSelect.value));
+                    dom.gameTimerDisplay.style.display = 'block';
+                } else {
+                    loadState(); updateAllScoresDisplay();
+                    dom.gameTimerDisplay.style.display = 'none';
+                }
+                dom.gameOverDisplay.style.display = 'none'; dom.optionsContainer.style.pointerEvents = 'auto'; dom.question.style.display = 'block';
+                generateQuestion();
+            };
+            const startGameTimer = (duration) => {
+                let timer = duration;
+                const updateDisplay = () => {
+                    const minutes = Math.floor(timer / 60), seconds = timer % 60;
+                    dom.gameTimerDisplay.textContent = `${toOdiaNum(String(minutes).padStart(2, '0'))}:${toOdiaNum(String(seconds).padStart(2, '0'))}`;
+                };
+                updateDisplay();
+                gameTimerId = setInterval(() => { timer--; if(timer >= 0) updateDisplay(); else endGame(); }, 1000);
+            };
+            const endGame = () => {
+                clearInterval(gameTimerId);
+                dom.gameOverSummary.textContent = translations[state.lang].gameOverSummary(state.score);
+                dom.gameOverDisplay.style.display = 'flex'; dom.optionsContainer.style.pointerEvents = 'none';
+                dom.question.style.display = 'none'; dom.skipBtn.style.display = 'none';
+                if (nextQuestionTimerId) clearInterval(nextQuestionTimerId);
+            };
+            const init = () => {
+                loadState(); applyLanguage();
+                document.body.dataset.theme = state.theme; dom.themeSwitch.querySelector('i').className = state.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
+                dom.themeSwitch.addEventListener('click', () => { state.theme = (state.theme === 'light' ? 'dark' : 'light'); document.body.dataset.theme = state.theme; dom.themeSwitch.querySelector('i').className = state.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'; saveState(); });
+                dom.langSwitch.addEventListener('click', () => { state.lang = (state.lang === 'odia' ? 'english' : 'odia'); applyLanguage(); saveState(); });
+                dom.resetBtn.addEventListener('click', () => resetScores(true));
+                dom.nextBtn.addEventListener('click', generateQuestion); dom.skipBtn.addEventListener('click', generateQuestion);
+                [dom.difficultySelect, dom.operationSelect].forEach(el => el.addEventListener('change', (e) => { state[el.id.includes('diff') ? 'difficulty' : 'operation'] = e.target.value; saveState(); generateQuestion(); }));
+                dom.timerChallengeCheckbox.addEventListener('change', (e) => { dom.timerDurationGroup.style.display = e.target.checked ? 'flex' : 'none'; startGame(); });
+                dom.timerDurationSelect.addEventListener('change', startGame);
+                dom.playAgainBtn.addEventListener('click', startGame);
+                startGame();
+            };
+            const updateAllScoresDisplay = () => { dom.scoreValue.textContent = toOdiaNum(state.score); dom.incorrectScoreValue.textContent = toOdiaNum(state.incorrectScore); };
+            init();
+        });
+    </script>
+    <script>
+        // Service Worker registration script
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(registration => {
+                        console.log('ServiceWorker registration successful with scope: ', registration.scope);
+                    })
+                    .catch(err => {
+                        console.log('ServiceWorker registration failed: ', err);
+                    });
+            });
+        }
     </script>
 </body>
 </html>
