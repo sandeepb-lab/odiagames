@@ -18,7 +18,6 @@
         .lang-switcher button.active { background-color: var(--accent-color); color: white; font-weight: bold; }
         .room-card { display: flex; justify-content: space-between; align-items: center; background: #fdfdfd; border: 1px solid #eee; padding: 1rem; border-radius: 8px; margin-bottom: 1rem; }
         .room-info strong { font-size: 1.2rem; }
-        .room-info span { background-color: var(--secondary-color); color: white; padding: 0.2rem 0.6rem; border-radius: 12px; font-size: 0.8rem; margin-left: 0.5rem; }
         .btn { background-color: var(--accent-color); color: var(--text-light); padding: 0.6rem 1.5rem; border-radius: 20px; border: none; cursor: pointer; }
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; font-size: 0.9rem; }
         th, td { padding: 0.8rem; border: 1px solid #ddd; text-align: left; vertical-align: middle; }
@@ -37,6 +36,7 @@
         <div class="main-card">
             <h1 data-key="results_panel_title"></h1>
             <div class="lang-switcher"> <button id="lang-or"></button> <button id="lang-en"></button> </div>
+            <a href="index.html" class="home-link-btn" data-key="back_to_home" style="display: block; text-align: center; margin-bottom: 2rem; color: var(--primary-color); text-decoration: underline;"></a>
             <div id="room-list-container"></div>
             <div id="results-display-area"></div>
         </div>
@@ -60,8 +60,8 @@ const db = firebase.database();
 
 
     const translations = {
-        or: { lang_btn: "ଓଡ଼ିଆ", results_panel_title: "ଫଳାଫଳ ପ୍ୟାନେଲ୍", available_rooms: "ଉପଲବ୍ଧ ସମାପ୍ତ ଗେମ୍", no_rooms: "କୌଣସି ସମାପ୍ତ ଗେମ୍ ମିଳିଲା ନାହିଁ |", check_results: "ଫଳାଫଳ ଦେଖନ୍ତୁ", loading_msg: "ଲୋଡ୍ କରୁଛି...", room_not_finished: "ଏହି ଗେମ୍ ଏପର୍ଯ୍ୟନ୍ତ ସମାପ୍ତ ହୋଇନାହିଁ |", results_for: "ପାଇଁ ଫଳାଫଳ", final_scores: "ଅନ୍ତିମ ସ୍କୋର୍", rank: "ରାଙ୍କ୍", name: "ନାମ", score: "ସ୍କୋର୍", details: "ବିବରଣୀ", answer_key: "ଉତ୍ତର ସୂଚୀ", question: "ପ୍ରଶ୍ନ", correct_answer: "ସଠିକ୍ ଉତ୍ତର", player_report_for: "ପାଇଁ ଖେଳାଳି ରିପୋର୍ଟ", your_answer: "ଆପଣଙ୍କ ଉତ୍ତର", correct: "ସଠିକ୍", incorrect: "ଭୁଲ", unanswered: "ଉତ୍ତର ଦିଆଯାଇନାହିଁ" },
-        en: { lang_btn: "English", results_panel_title: "Results Panel", available_rooms: "Available Finished Games", no_rooms: "No finished games found.", check_results: "Check Results", loading_msg: "Loading...", room_not_finished: "This game has not finished yet.", results_for: "Results for", final_scores: "Final Scores", rank: "Rank", name: "Name", score: "Score", details: "Details", answer_key: "Answer Key", question: "Question", correct_answer: "Correct Answer", player_report_for: "Player Report for", your_answer: "Your Answer", correct: "Correct", incorrect: "Incorrect", unanswered: "Unanswered" }
+        or: { lang_btn: "ଓଡ଼ିଆ", results_panel_title: "ଫଳାଫଳ ପ୍ୟାନେଲ୍", available_rooms: "ଉପଲବ୍ଧ ସମାପ୍ତ ଗେମ୍", no_rooms: "କୌଣସି ସମାପ୍ତ ଗେମ୍ ମିଳିଲା ନାହିଁ |", back_to_home: "ହୋମ୍ ପେଜକୁ ଫେରନ୍ତୁ |", check_results: "ଫଳାଫଳ ଦେଖନ୍ତୁ", loading_msg: "ଲୋଡ୍ କରୁଛି...", results_for: "ପାଇଁ ଫଳାଫଳ", final_scores: "ଅନ୍ତିମ ସ୍କୋର୍", rank: "ରାଙ୍କ୍", name: "ନାମ", score: "ସ୍କୋର୍", details: "ବିବରଣୀ", answer_key: "ଉତ୍ତର ସୂଚୀ", question: "ପ୍ରଶ୍ନ", correct_answer: "ସଠିକ୍ ଉତ୍ତର", player_report_for: "ପାଇଁ ଖେଳାଳି ରିପୋର୍ଟ", your_answer: "ଆପଣଙ୍କ ଉତ୍ତର", correct: "ସଠିକ୍", incorrect: "ଭୁଲ", unanswered: "ଉତ୍ତର ଦିଆଯାଇନାହିଁ", password_label: "ରୁମ୍ ପାସୱାର୍ଡ (ବୈକଳ୍ପିକ)", password_error: "ଭୁଲ୍ ପାସୱାର୍ଡ |" },
+        en: { lang_btn: "English", results_panel_title: "Results Panel", available_rooms: "Available Finished Games", no_rooms: "No finished games found.", back_to_home: "Back to Home Page", check_results: "Check Results", loading_msg: "Loading...", results_for: "Results for", final_scores: "Final Scores", rank: "Rank", name: "Name", score: "Score", details: "Details", answer_key: "Answer Key", question: "Question", correct_answer: "Correct Answer", player_report_for: "Player Report for", your_answer: "Your Answer", correct: "Correct", incorrect: "Incorrect", unanswered: "Unanswered", password_label: "Room Password (Optional)", password_error: "Incorrect password." }
     };
     const dom = {};
     ['lang-or', 'lang-en', 'room-list-container', 'results-display-area'].forEach(id => dom[id.replace(/-/g, '_')] = document.getElementById(id));
@@ -78,7 +78,7 @@ const db = firebase.database();
             const roomsRef = db.ref('rooms').orderByChild('status').equalTo('finished');
             const snapshot = await roomsRef.get();
             
-            dom.room_list_container.innerHTML = `<h2 data-key="available_rooms">${translations[lang].available_rooms}</h2>`; // Reset
+            dom.room_list_container.innerHTML = `<h2 data-key="available_rooms">${translations[lang].available_rooms}</h2>`;
             
             if (!snapshot.exists()) {
                 dom.room_list_container.innerHTML += `<p data-key="no_rooms">${translations[lang].no_rooms}</p>`;
@@ -86,15 +86,23 @@ const db = firebase.database();
             }
             
             let roomsHTML = '';
+            let roomsArray = [];
             snapshot.forEach(childSnapshot => {
-                const roomCode = childSnapshot.key;
-                roomsHTML = `<div class="room-card"><div class="room-info"><strong>${roomCode}</strong></div><button class="btn check-result-btn" data-roomcode="${roomCode}" data-key="check_results">${translations[lang].check_results}</button></div>` + roomsHTML; // Prepend to show newest first
+                roomsArray.push({ key: childSnapshot.key, val: childSnapshot.val() });
             });
+            // Sort by creation time, newest first
+            roomsArray.sort((a, b) => b.val.createdAt - a.val.createdAt);
+
+            roomsArray.forEach(room => {
+                const roomCode = room.key;
+                roomsHTML += `<div class="room-card"><div class="room-info"><strong>${roomCode}</strong></div><button class="btn check-result-btn" data-roomcode="${roomCode}" data-key="check_results">${translations[lang].check_results}</button></div>`;
+            });
+
             dom.room_list_container.innerHTML += roomsHTML;
             document.querySelectorAll('.check-result-btn').forEach(b => b.onclick = handleCheckResult);
         } catch (error) {
             console.error("Error loading rooms:", error);
-            dom.room_list_container.innerHTML += `<p style="color:red;">firebase ସହ ସଂଯୋଗ ହୋଇପାରିଲା ନାହିଁ</p>`;
+            dom.room_list_container.innerHTML += `<p style="color:red;">Error loading rooms. Check console and Firebase rules.</p>`;
         }
     }
 
@@ -131,8 +139,9 @@ const db = firebase.database();
             toggle.onclick = () => {
                 const playerIndex = toggle.dataset.playerIndex;
                 const detailsRow = document.getElementById(`details-row-${playerIndex}`);
-                const detailsContentDiv = document.getElementById(`details-content-${playerIndex}`);
                 if (detailsRow.style.display === 'table-row') { detailsRow.style.display = 'none'; return; }
+
+                const detailsContentDiv = detailsRow.querySelector('.player-details');
                 const player = sortedResults[playerIndex];
                 let detailsContent = `<h4>${translations[lang].player_report_for} ${player.name}</h4><ul>`;
                 questions.forEach((q, i) => {
@@ -145,14 +154,25 @@ const db = firebase.database();
                 });
                 detailsContent += `</ul>`;
                 detailsContentDiv.innerHTML = detailsContent;
+                
                 document.querySelectorAll('.player-details-row').forEach(row => row.style.display = 'none');
                 detailsRow.style.display = 'table-row';
             };
         });
     }
+
+    const init = () => {
+        // Check if Firebase keys are placeholders
+        if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("YOUR_")) {
+            document.body.innerHTML = `<div style="padding: 2rem; text-align: center; color: red; font-size: 1.2rem;"><h1>Configuration Error</h1><p>Firebase keys are missing. Please paste your firebaseConfig object into results.html.</p></div>`;
+            return;
+        }
+        setLanguage('or'); // Set a default language first
+    };
+    
     dom.lang_or.onclick = () => setLanguage('or');
     dom.lang_en.onclick = () => setLanguage('en');
-    const init = () => { setLanguage('or'); };
+    
     init();
 });
 </script>
