@@ -1,0 +1,21 @@
+{
+    "name": "SB ଗଣିତ ବିଜ୍ଞ",
+    "short_name": "ଗଣିତ ବିଜ୍ଞ",
+    "description": "A fun math game for kids in Odia.",
+    "start_url": "./index.html",
+    "display": "standalone",
+    "background_color": "#F0F4F8",
+    "theme_color": "#3B82F6",
+    "icons": [
+        {
+            "src": "icon-192.png",
+            "type": "image/png",
+            "sizes": "192x192"
+        },
+        {
+            "src": "icon-512.png",
+            "type": "image/png",
+            "sizes": "512x512"
+        }
+    ]
+}
