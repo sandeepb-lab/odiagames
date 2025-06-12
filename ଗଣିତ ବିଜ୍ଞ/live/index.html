@@ -78,13 +78,9 @@
     </header>
     <main>
         <section id="landing-screen" class="game-screen"> <div class="container"><div class="game-card"> <h1 data-key="welcome"></h1> <div class="btn-group"> <button id="show-create-btn" class="btn" data-key="create_room_btn"></button> <button id="show-join-btn" class="btn btn-secondary" data-key="join_room_btn"></button> <a href="results.html" class="btn btn-secondary" style="background-color: #555;" data-key="check_results_btn"></a> </div> </div></div> </section>
-        
-        <!-- MODIFIED: Create screen no longer has a room code input -->
         <section id="create-screen" class="game-screen"> <div class="container"><div class="game-card"> <h1 data-key="create_title"></h1> <div class="form-group"> <label for="create-player-name" data-key="name_label"></label> <input type="text" id="create-player-name"> </div> <div class="form-group"> <label for="create-password" data-key="password_label"></label> <input type="text" id="create-password" inputmode="numeric"> </div> <button id="create-btn" class="btn" data-key="create_btn"></button> <div id="create-error" class="error-message"></div> <button class="back-btn" data-screen="landing-screen">← <span data-key="back_btn"></span></button> </div></div> </section>
-
         <section id="join-screen" class="game-screen"> <div class="container"><div class="game-card"> <h1 data-key="join_title"></h1> <div class="form-group"> <label for="join-room-code-num" data-key="room_code_label"></label> <div class="room-code-input-group"><span class="room-code-prefix">SB</span><input type="text" id="join-room-code-num" inputmode="numeric" maxlength="4"></div> </div> <div class="form-group"> <label for="join-player-name" data-key="name_label"></label> <input type="text" id="join-player-name"> </div> <div class="form-group"> <label for="join-password" data-key="password_label"></label> <input type="text" id="join-password" inputmode="numeric"> </div> <button id="join-btn" class="btn" data-key="join_btn"></button> <div id="join-error" class="error-message"></div> <button class="back-btn" data-screen="landing-screen">← <span data-key="back_btn"></span></button> </div></div> </section>
         <section id="lobby-screen" class="game-screen"> <div class="container"><div class="game-card"> <h1 data-key="lobby_title"></h1> <h2><span data-key="room_code_display"></span> <strong id="lobby-room-code" style="color: var(--accent-color);"></strong></h2> <h3 data-key="players_in_room"></h3> <ul id="player-list"></ul> <div id="host-controls" style="display: none;"> <h3 data-key="game_settings_title"></h3> <div class="settings-grid"> <div class="form-group"><label for="game-timer" data-key="total_time_label"></label><select id="game-timer"></select></div> <div class="form-group"><label for="question-count" data-key="q_count_label"></label><select id="question-count"></select></div> <div class="form-group"><label for="game-type" data-key="game_type_label"></label><select id="game-type"></select></div> <div class="form-group"><label for="game-difficulty" data-key="difficulty_label"></label><select id="game-difficulty"></select></div> </div> <button id="start-game-btn" class="btn" data-key="start_game_btn" disabled></button> <small id="start-game-info" data-key="start_game_info"></small> </div> <div id="guest-info" style="display: none;"> <h3 data-key="game_settings_title"></h3> <div class="settings-grid"> <div class="setting-display"><strong><span data-key="total_time_label"></span>:</strong> <span id="guest-game-timer"></span></div> <div class="setting-display"><strong><span data-key="q_count_label"></span>:</strong> <span id="guest-question-count"></span></div> <div class="setting-display"><strong><span data-key="game_type_label"></span>:</strong> <span id="guest-game-type"></span></div> <div class="setting-display"><strong><span data-key="difficulty_label"></span>:</strong> <span id="guest-game-difficulty"></span></div> </div> <br> <p data-key="waiting_msg"></p> </div> 
-        <!-- NEW: Share controls in the lobby -->
         <div id="share-controls"><button id="share-btn" class="btn btn-secondary" data-key="share_btn"></button></div>
         <button class="back-btn" id="leave-lobby-btn">← <span data-key="leave_lobby_btn"></span></button> </div></div> </section>
         <section id="game-screen" class="game-screen"> <div class="container"><div class="game-card"> <div class="game-header"> <span id="question-counter"></span> <span id="main-timer"></span> </div> <div id="progress-bar-container"><div id="progress-bar"></div></div> <div id="question-container"></div> <div id="answer-options" class="answer-options"></div> </div></div> </section>
@@ -97,6 +93,7 @@
 
 <script>
 document.addEventListener('DOMContentLoaded', () => {
+    // PASTE YOUR FIREBASE CONFIGURATION OBJECT HERE
     const firebaseConfig = {
   apiKey: "AIzaSyAYurYfkcGSbRmLNBtXmX60iml5ty8-ipI",
   authDomain: "sbg-math-game.firebaseapp.com",
@@ -108,13 +105,16 @@ document.addEventListener('DOMContentLoaded', () => {
   measurementId: "G-S9KFTEQZ9P"
 };
 firebase.initializeApp(firebaseConfig);
-const db = firebase.database();
 
+
+    
+    // --- App State and DOM Elements ---
+    let appInitialized = false;
+    let db;
     const translations = {
-        or: { lang_btn: "ଓଡ଼ିଆ", logo_text: "SB ଗଣିତ ବିଜ୍ଞ ଗେମ୍ ରୁମ୍", home_btn: "ହୋମ୍", other_games_btn: "ଗଣିତ ବିଜ୍ଞ", welcome: "ଗଣିତ ବିଜ୍ଞ ଦଳ କୁ ସ୍ଵାଗତ!", create_room_btn: "ରୁମ୍ ତିଆରି କରନ୍ତୁ", join_room_btn: "ରୁମ୍ ରେ ଯୋଗ ଦିଅନ୍ତୁ", check_results_btn: "ଫଳାଫଳ ଦେଖନ୍ତୁ", create_title: "ଏକ ଗେମ୍ ରୁମ୍ ତିଆରି କରନ୍ତୁ", room_code_label: "ରୁମ୍ କୋଡ୍", name_label: "ଆପଣଙ୍କ ନାମ", password_label: "ରୁମ୍ ପାସୱାର୍ଡ (ବୈକଳ୍ପିକ)", create_btn: "ତିଆରି କରି ଲବିରେ ପ୍ରବେଶ କରନ୍ତୁ", back_btn: "ପଛକୁ", join_title: "ଏକ ଗେମ୍ ରୁମ୍ ରେ ଯୋଗ ଦିଅନ୍ତୁ", join_btn: "ଲବିରେ ଯୋଗ ଦିଅନ୍ତୁ", lobby_title: "ଲବି", room_code_display: "ରୁମ୍ କୋଡ୍:", players_in_room: "ଖେଳାଳି:", game_settings_title: "ଗେମ୍ ସେଟିଂସ୍", total_time_label: "ମୋଟ ସମୟ", q_count_label: "ପ୍ରଶ୍ନ ସଂଖ୍ୟା", game_type_label: "ଗେମ୍ ପ୍ରକାର", difficulty_label: "କଠିନତା", type_mix: "ମିଶ୍ରଣ", type_add: "ମିଶାଣ", type_sub: "ଫେଡାଣ", type_mul: "ଗୁଣନ", type_div: "ହରଣ", diff_easy: "ସହଜ", diff_medium: "ମଧ୍ୟମ", diff_hard: "କଠିନ", start_game_btn: "ଗେମ୍ ଆରମ୍ଭ କରନ୍ତୁ", start_game_info: "ଆରମ୍ଭ ପାଇଁ ସର୍ବନିମ୍ନ ୨ ଖେଳାଳି ଆବଶ୍ୟକ", waiting_msg: "ହୋଷ୍ଟ୍ ଗେମ୍ ଆରମ୍ଭ କରିବାକୁ ଅପେକ୍ଷା କରନ୍ତୁ...", leave_lobby_btn: "ଲବି ଛାଡନ୍ତୁ", question: "ପ୍ରଶ୍ନ", results_title: "ଗେମ୍ ସମାପ୍ତ!", final_scores: "ଅନ୍ତିମ ସ୍କୋର୍", waiting_for_others: "ଅନ୍ୟ ଖେଳାଳିଙ୍କ ପାଇଁ ଅପେକ୍ଷା କରୁଛି...", show_answers_btn: "ଉତ୍ତର ଦେଖନ୍ତୁ", answer_key: "ଉତ୍ତର ସୂଚୀ", correct_answer: "ସଠିକ୍ ଉତ୍ତର", your_answer: "ଆପଣଙ୍କ ଉତ୍ତର", correct: "ସଠିକ୍", incorrect: "ଭୁଲ", unanswered: "ଉତ୍ତର ଦିଆଯାଇନାହିଁ", rank_header: "ରାଙ୍କ୍", name_header: "ନାମ", score_header: "ସ୍କୋର୍", play_again_btn: "ପୁଣି ଖେଳନ୍ତୁ", footer_text: "❤️ ସହିତ <a href='https://www.instagram.com/sandeepbiswalg' target='_blank' rel='noopener noreferrer'>ସନ୍ଦୀପ ବିଶ୍ଵାଳ G </a>ଙ୍କ ଦ୍ଵାରା ସୁନ୍ଦର ସୁନ୍ଦର ପିଲାମାନଙ୍କ ପାଇଁ  ପ୍ରସ୍ତୁତ", time_up_msg: "ସମୟ ସମାପ୍ତ!", room_deleted_msg: "ରୁମ୍ ହୋଷ୍ଟ୍ ଦ୍ଵାରା ଡିଲିଟ୍ ହୋଇଯାଇଛି |", you_msg: "ଆପଣ", minute_msg: "ମିନିଟ୍", download_report_btn: "ରିପୋର୍ଟ ଡାଉନଲୋଡ୍ କରନ୍ତୁ", room_code_error: "ଦୟାକରି ଏକ ୪-ଅଙ୍କ ବିଶିଷ୍ଟ କୋଡ୍ ଦିଅନ୍ତୁ |", general_error: "ରୁମ୍ କୋଡ୍ ଏବଂ ନାମ ଆବଶ୍ୟକ |", room_exists_error: "ଏହି ରୁମ୍ କୋଡ୍ ପୂର୍ବରୁ ଅଛି |", room_not_found_error: "ରୁମ୍ ମିଳିଲା ନାହିଁ |", room_full_error: "ରୁମ୍ ପୂର୍ଣ୍ଣ ଅଛି |", name_in_use_error: "ଏହି ନାମ ପୂର୍ବରୁ ବ୍ୟବହୃତ ହୋଇଛି |", password_error: "ଭୁଲ୍ ପାସୱାର୍ଡ |", share_btn: "ସାଙ୍ଗମାନଙ୍କୁ ନିମନ୍ତ୍ରଣ କରନ୍ତୁ", invite_copied: "ନିମନ୍ତ୍ରଣ ଲିଙ୍କ୍ କପି ହୋଇଗଲା!" },
+        or: { lang_btn: "ଓଡ଼ିଆ", logo_text: "SB ଗଣିତ ବିଜ୍ଞ ଗେମ୍ ରୁମ୍", home_btn: "ହୋମ୍", other_games_btn: "ଗଣିତ ବିଜ୍ଞ", welcome: "ଗଣିତ ବିଜ୍ଞ ଦଳ କୁ ସ୍ଵାଗତ!", create_room_btn: "ରୁମ୍ ତିଆରି କରନ୍ତୁ", join_room_btn: "ରୁମ୍ ରେ ଯୋଗ ଦିଅନ୍ତୁ", check_results_btn: "ଫଳାଫଳ ଦେଖନ୍ତୁ", create_title: "ଏକ ଗେମ୍ ରୁମ୍ ତିଆରି କରନ୍ତୁ", room_code_label: "ରୁମ୍ କୋଡ୍", name_label: "ଆପଣଙ୍କ ନାମ", password_label: "ରୁମ୍ ପାସୱାର୍ଡ (ବୈକଳ୍ପିକ)", create_btn: "ତିଆରି କରି ଲବିରେ ପ୍ରବେଶ କରନ୍ତୁ", back_btn: "ପଛକୁ", join_title: "ଏକ ଗେମ୍ ରୁମ୍ ରେ ଯୋଗ ଦିଅନ୍ତୁ", join_btn: "ଲବିରେ ଯୋଗ ଦିଅନ୍ତୁ", lobby_title: "ଲବି", room_code_display: "ରୁମ୍ କୋଡ୍:", players_in_room: "ଖେଳାଳି:", game_settings_title: "ଗେମ୍ ସେଟିଂସ୍", total_time_label: "ମୋଟ ସମୟ", q_count_label: "ପ୍ରଶ୍ନ ସଂଖ୍ୟା", game_type_label: "ଗେମ୍ ପ୍ରକାର", difficulty_label: "କଠିନତା", type_mix: "ମିଶ୍ରଣ", type_add: "ମିଶାଣ", type_sub: "ଫେଡାଣ", type_mul: "ଗୁଣନ", type_div: "ହରଣ", diff_easy: "ସହଜ", diff_medium: "ମଧ୍ୟମ", diff_hard: "କଠିନ", start_game_btn: "ଗେମ୍ ଆରମ୍ଭ କରନ୍ତୁ", start_game_info: "ଆରମ୍ଭ ପାଇଁ ସର୍ବନିମ୍ନ ୨ ଖେଳାଳି ଆବଶ୍ୟକ", waiting_msg: "ହୋଷ୍ଟ୍ ଗେମ୍ ଆରମ୍ଭ କରିବାକୁ ଅପେକ୍ଷା କରନ୍ତୁ...", leave_lobby_btn: "ଲବି ଛାଡନ୍ତୁ", question: "ପ୍ରଶ୍ନ", results_title: "ଗେମ୍ ସମାପ୍ତ!", final_scores: "ଅନ୍ତିମ ସ୍କୋର୍", waiting_for_others: "ଅନ୍ୟ ଖେଳାଳିଙ୍କ ପାଇଁ ଅପେକ୍ଷା କରୁଛି...", show_answers_btn: "ଉତ୍ତର ଦେଖନ୍ତୁ", answer_key: "ଉତ୍ତର ସୂଚୀ", correct_answer: "ସଠିକ୍ ଉତ୍ତର", your_answer: "ଆପଣଙ୍କ ଉତ୍ତର", correct: "ସଠିକ୍", incorrect: "ଭୁଲ", unanswered: "ଉତ୍ତର ଦିଆଯାଇନାହିଁ", rank_header: "ରାଙ୍କ୍", name_header: "ନାମ", score_header: "ସ୍କୋର୍", play_again_btn: "ପୁଣି ଖେଳନ୍ତୁ", footer_text: "❤️ ସହିତ <a href='https://www.instagram.com/sandeepbiswalg' target='_blank' rel='noopener noreferrer'>ସନ୍ଦୀପ ବିଶ୍ଵାଳ G </a>ଙ୍କ ଦ୍ଵାରା ସୁନ୍ଦର ସୁନ୍ଦର ପିଲାମାନଙ୍କ ପାଇଁ  ପ୍ରସ୍ତୁତ", time_up_msg: "ସମୟ ସମାପ୍ତ!", room_deleted_msg: "ରୁମ୍ ହୋଷ୍ଟ୍ ଦ୍ଵାରା ଡିଲିଟ୍ ହୋଇଯାଇଛି |", you_msg: "ଆପଣ", minute_msg: "ମିନିଟ୍", download_report_btn: "ରିପୋର୍ଟ ଡାଉନଲୋଡ୍ କରନ୍ତୁ", room_code_error: "ଦୟାକରି ଏକ ୪-ଅଙ୍କ ବିଶିଷ୍ଟ କୋଡ୍ ଦିଅନ୍ତୁ |", general_error: "ଆପଣଙ୍କ ନାମ ଆବଶ୍ୟକ |", room_exists_error: "This room code already exists.", room_not_found_error: "ରୁମ୍ ମିଳିଲା ନାହିଁ |", room_full_error: "ରୁମ୍ ପୂର୍ଣ୍ଣ ଅଛି |", name_in_use_error: "ଏହି ନାମ ପୂର୍ବରୁ ବ୍ୟବହୃତ ହୋଇଛି |", password_error: "ଭୁଲ୍ ପାସୱାର୍ଡ |", share_btn: "ସାଙ୍ଗମାନଙ୍କୁ ନିମନ୍ତ୍ରଣ କରନ୍ତୁ", invite_copied: "ନିମନ୍ତ୍ରଣ ଲିଙ୍କ୍ କପି ହୋଇଗଲା!" },
         en: { lang_btn: "English", logo_text: "SB Math wiz Game Room", home_btn: "Home", other_games_btn: "Math Wizard", welcome: "Welcome! to Math wizard team", create_room_btn: "Create Room", join_room_btn: "Join Room", check_results_btn: "Check Results", create_title: "Create a Game Room", room_code_label: "Room Code", name_label: "Your Name", password_label: "Room Password (Optional)", create_btn: "Create & Enter Lobby", back_btn: "Back", join_title: "Join a Game Room", join_btn: "Join Lobby", lobby_title: "Lobby", room_code_display: "Room Code:", players_in_room: "Players:", game_settings_title: "Game Settings", total_time_label: "Total Time", q_count_label: "No. of Questions", game_type_label: "Game Type", difficulty_label: "Difficulty", type_mix: "Mix", type_add: "Addition", type_sub: "Subtraction", type_mul: "Multiplication", type_div: "Division", diff_easy: "Easy", diff_medium: "Medium", diff_hard: "Hard", start_game_btn: "Start Game", start_game_info: "Minimum 2 players to start", waiting_msg: "Waiting for the host to start...", leave_lobby_btn: "Leave Lobby", question: "Question", results_title: "Game Over!", final_scores: "Final Scores", waiting_for_others: "Waiting for other players to finish...", show_answers_btn: "Show Answers", answer_key: "Answer Key", correct_answer: "Correct Answer", your_answer: "Your Answer", correct: "Correct", incorrect: "Incorrect", unanswered: "Unanswered", rank_header: "Rank", name_header: "Name", score_header: "Score", play_again_btn: "Play Again", footer_text: "Made with ❤️ by <a href='https://www.instagram.com/sandeepbiswalg' target='_blank' rel='noopener noreferrer'>Sandeep Biswal G</a> for cute cute childs", time_up_msg: "Time's Up!", room_deleted_msg: "Room was deleted by host.", you_msg: "You", minute_msg: "Minutes", download_report_btn: "Download Report", room_code_error: "Please enter a 4-digit room code.", general_error: "Your name is required.", room_exists_error: "This room code already exists.", room_not_found_error: "Room not found.", room_full_error: "Room is full.", name_in_use_error: "This name is already in use.", password_error: "Incorrect password.", share_btn: "Invite Friends", invite_copied: "Invite link copied!" }
     };
-
     const PLAYER_LIMIT = 100;
     let gameState = { roomCode: null, playerName: null, isHost: false, lobbyListener: null, resultsListener: null, questions: [], mainGameTimer: null };
     let gameLogicState = { currentQuestionIndex: -1, score: 0, playerAnswers: [] };
@@ -146,10 +146,10 @@ const db = firebase.database();
     function cleanUpSession() { if (gameState.lobbyListener) getRoomRef(gameState.roomCode).off('value', gameState.lobbyListener); if (gameState.resultsListener) getRoomRef(gameState.roomCode).off('value', gameState.resultsListener); clearInterval(gameState.mainGameTimer); sessionStorage.removeItem('sbg_roomCode'); sessionStorage.removeItem('sbg_playerName'); gameState = { roomCode: null, playerName: null, isHost: false, lobbyListener: null, resultsListener: null, questions: [], mainGameTimer: null }; gameLogicState = { currentQuestionIndex: -1, score: 0, playerAnswers: [] }; }
     async function leaveLobby(reason = "", isKicked = false) { const roomCode = gameState.roomCode; if (roomCode && !isKicked) { const roomData = await getRoomData(roomCode); if(roomData && roomData.players && roomData.players[gameState.playerName]) { const playerRef = db.ref(`rooms/${roomCode}/players/${gameState.playerName}`); await playerRef.remove(); if (gameState.isHost) { await deleteRoom(roomCode); } } } cleanUpSession(); if (reason) alert(reason); showScreen('landing-screen'); }
     function startGame(roomData) { gameLogicState = { currentQuestionIndex: -1, score: 0, playerAnswers: [] }; showScreen('game-screen'); startMainTimer(roomData); displayNextQuestion(); }
-    function startMainTimer(roomData) { if (!roomData || !roomData.gameStartedAt) { console.error("Game start time not found!"); return; } if (gameState.mainGameTimer) clearInterval(gameState.mainGameTimer); const serverTimeOffset = (firebase.database.ServerValue.TIMESTAMP - new Date().getTime()); const estimatedServerTimeNow = new Date().getTime() + serverTimeOffset; const elapsedTime = Math.floor((estimatedServerTimeNow - roomData.gameStartedAt) / 1000); let timeLeft = roomData.settings.timer - elapsedTime; if (timeLeft < 0) timeLeft = 0; const update = () => dom.main_timer.textContent = `${displayNum(Math.floor(timeLeft/60))}:${displayNum((timeLeft%60).toString().padStart(2,'0'))}`; update(); gameState.mainGameTimer = setInterval(() => { if (--timeLeft < 0) { forceEndGame(true); } else update(); }, 1000); }
+    async function startMainTimer(roomData) { if (gameState.mainGameTimer) clearInterval(gameState.mainGameTimer); const serverTimeOffsetSnapshot = await db.ref('/.info/serverTimeOffset').once('value'); const serverTimeOffset = serverTimeOffsetSnapshot.val() || 0; if (typeof roomData.gameStartedAt !== 'number') { console.error("Game start time not found or invalid!"); dom.main_timer.textContent = '...'; return; } const estimatedServerTimeNow = new Date().getTime() + serverTimeOffset; const elapsedTime = Math.floor((estimatedServerTimeNow - roomData.gameStartedAt) / 1000); let timeLeft = roomData.settings.timer - elapsedTime; if (timeLeft < 0) timeLeft = 0; const update = () => dom.main_timer.textContent = `${displayNum(Math.floor(timeLeft/60))}:${displayNum((timeLeft%60).toString().padStart(2,'0'))}`; update(); gameState.mainGameTimer = setInterval(() => { if (--timeLeft < 0) { forceEndGame(true); } else update(); }, 1000); }
     async function displayNextQuestion() { gameLogicState.currentQuestionIndex++; const roomData = await getRoomData(gameState.roomCode); if (!roomData || gameLogicState.currentQuestionIndex >= roomData.settings.q_count) { forceEndGame(false); return; } const q = gameState.questions[gameLogicState.currentQuestionIndex]; dom.progress_bar.style.width = `${((gameLogicState.currentQuestionIndex + 1) / roomData.settings.q_count) * 100}%`; dom.question_counter.textContent = `${translations[document.documentElement.lang].question} ${displayNum(gameLogicState.currentQuestionIndex + 1)}/${displayNum(roomData.settings.q_count)}`; const qText = q.question.split(' ').map(part => isNaN(part) ? part : displayNum(part)).join(' '); dom.question_container.textContent = `${qText} = ?`; dom.answer_options.innerHTML = q.options.map(o => `<button class="btn answer-btn">${displayNum(o)}</button>`).join(''); dom.answer_options.querySelectorAll('.answer-btn').forEach(b => b.onclick = () => handleAnswer(parseInt(b.innerText.replace(/[୦-୯]/g, d => '୦୧୨୩୪୫୬୭୮୯'.indexOf(d))))); }
     function handleAnswer(selected) { const q = gameState.questions[gameLogicState.currentQuestionIndex]; if (selected === q.answer) gameLogicState.score++; gameLogicState.playerAnswers.push({ qIndex: gameLogicState.currentQuestionIndex, question: q.question, answer: selected, correctAnswer: q.answer }); dom.answer_options.querySelectorAll('.answer-btn').forEach(btn => { btn.disabled = true; const val = parseInt(btn.innerText.replace(/[୦-୯]/g, d => '୦୧୨୩୪୫୬୭୮୯'.indexOf(d))); if (val === q.answer) btn.classList.add('correct'); else if (val === selected) btn.classList.add('incorrect'); }); setTimeout(displayNextQuestion, 1500); }
-    async function forceEndGame(isTimeUp) { clearInterval(gameState.mainGameTimer); if(isTimeUp) alert(translations[document.documentElement.lang].time_up_msg); const roomData = await getRoomData(gameState.roomCode); if (roomData) { for (let i = gameLogicState.currentQuestionIndex; i < roomData.settings.q_count; i++) { if (gameState.questions && i < gameState.questions.length && !gameLogicState.playerAnswers.find(a => a.qIndex === i)) { gameLogicState.playerAnswers.push({ qIndex: i, question: gameState.questions[i].question, answer: null, correctAnswer: gameState.questions[i].answer }); } } const myResult = { name: gameState.playerName, score: gameLogicState.score, answers: gameLogicState.playerAnswers }; await updateRoomData(gameState.roomCode, { [`results/${gameState.playerName}`]: myResult }); const updatedRoomData = await getRoomData(gameState.room_code); if(updatedRoomData && updatedRoomData.players && updatedRoomData.results){ const numPlayers = Object.keys(updatedRoomData.players).length; const numResults = Object.keys(updatedRoomData.results).length; if (numResults >= numPlayers) { await updateRoomData(gameState.roomCode, { status: 'finished' }); } } } showScreen('results-screen'); dom.results_subtitle.setAttribute('data-key', 'waiting_for_others'); setLanguage(document.documentElement.lang); dom.results_body.innerHTML = ''; startResultsListener(); }
+    async function forceEndGame(isTimeUp) { clearInterval(gameState.mainGameTimer); if(isTimeUp) alert(translations[document.documentElement.lang].time_up_msg); const roomData = await getRoomData(gameState.roomCode); if (roomData) { for (let i = gameLogicState.currentQuestionIndex; i < roomData.settings.q_count; i++) { if (gameState.questions && i < gameState.questions.length && !gameLogicState.playerAnswers.find(a => a.qIndex === i)) { gameLogicState.playerAnswers.push({ qIndex: i, question: gameState.questions[i].question, answer: null, correctAnswer: gameState.questions[i].answer }); } } const myResult = { name: gameState.playerName, score: gameLogicState.score, answers: gameLogicState.playerAnswers }; await updateRoomData(gameState.roomCode, { [`results/${gameState.playerName}`]: myResult }); const updatedRoomData = await getRoomData(gameState.roomCode); if(updatedRoomData && updatedRoomData.players && updatedRoomData.results){ const numPlayers = Object.keys(updatedRoomData.players).length; const numResults = Object.keys(updatedRoomData.results).length; if (numResults >= numPlayers) { await updateRoomData(gameState.roomCode, { status: 'finished' }); } } } showScreen('results-screen'); dom.results_subtitle.setAttribute('data-key', 'waiting_for_others'); setLanguage(document.documentElement.lang); dom.results_body.innerHTML = ''; startResultsListener(); }
     function startResultsListener() { if (gameState.resultsListener) getRoomRef(gameState.roomCode).off('value', gameState.resultsListener); gameState.resultsListener = (snapshot) => { const finalRoomData = snapshot.val(); if(finalRoomData && finalRoomData.status === 'finished') { getRoomRef(gameState.roomCode).off('value', gameState.resultsListener); gameState.resultsListener = null; dom.results_room_code.textContent = `Room: ${gameState.roomCode}`; dom.results_subtitle.setAttribute('data-key', 'final_scores'); setLanguage(document.documentElement.lang); const results = Object.values(finalRoomData.results); dom.results_body.innerHTML = results.sort((a,b) => b.score - a.score).map((r, i) => `<tr><td>${displayNum(i+1)}</td><td>${r.name}</td><td>${displayNum(r.score)}/${displayNum(finalRoomData.settings.q_count)}</td></tr>`).join(''); } }; getRoomRef(gameState.roomCode).on('value', gameState.resultsListener); }
     
     // --- Event Listeners ---
@@ -157,22 +157,8 @@ const db = firebase.database();
     dom.show_join_btn.onclick = () => showScreen('join-screen');
     document.querySelectorAll('.back-btn, .home-link').forEach(btn => btn.onclick = (e) => { e.preventDefault(); leaveLobby(); });
     dom.leave_lobby_btn.onclick = () => leaveLobby();
-    
-    // MODIFIED: Create button now generates a unique room code
-    async function generateUniqueRoomCode() {
-        let roomCode = '';
-        let roomExists = true;
-        while(roomExists) {
-            const randomNum = Math.floor(1000 + Math.random() * 9000).toString();
-            roomCode = `SB${randomNum}`;
-            const data = await getRoomData(roomCode);
-            roomExists = data !== null;
-        }
-        return roomCode;
-    }
-
+    async function generateUniqueRoomCode() { let roomCode = ''; let roomExists = true; while(roomExists) { const randomNum = Math.floor(1000 + Math.random() * 9000).toString(); roomCode = `SB${randomNum}`; const data = await getRoomData(roomCode); roomExists = data !== null; } return roomCode; }
     dom.create_btn.onclick = async () => { const pn = dom.create_player_name.value.trim(); const pw = dom.create_password.value.trim(); const lang = document.documentElement.lang; dom.create_error.textContent = ''; if (!pn) { dom.create_error.textContent = translations[lang].general_error; return; } const rc = await generateUniqueRoomCode(); const settings = { timer: 60, q_count: 10, type: 'mix', difficulty: 'easy' }; await getRoomRef(rc).set({ password: pw || null, players: { [pn]: { name: pn, isHost: true } }, status: 'lobby', settings, createdAt: firebase.database.ServerValue.TIMESTAMP }); enterLobby(rc, pn, true); };
-    
     dom.join_btn.onclick = async () => { const rcNum = dom.join_room_code_num.value.trim(); const pn = dom.join_player_name.value.trim(); const pw = dom.join_password.value.trim(); const lang = document.documentElement.lang; dom.join_error.textContent = ''; if (rcNum.length !== 4 || !/^\d{4}$/.test(rcNum)) { dom.join_error.textContent = translations[lang].room_code_error; return; } if (!pn) { dom.join_error.textContent = translations[lang].general_error; return; } const rc = `SB${rcNum}`; const rd = await getRoomData(rc); if (!rd) { dom.join_error.textContent = translations[lang].room_not_found_error; return; } if (rd.players && Object.keys(rd.players).length >= PLAYER_LIMIT) { dom.join_error.textContent = translations[lang].room_full_error; return; } if (rd.players && rd.players[pn]) { dom.join_error.textContent = translations[lang].name_in_use_error; return; } if (rd.password && rd.password !== pw) { dom.join_error.textContent = translations[lang].password_error; return; } await updateRoomData(rc, { [`players/${pn}`]: { name: pn, isHost: false } }); enterLobby(rc, pn, false); };
     dom.start_game_btn.onclick = async () => { const rd = await getRoomData(gameState.roomCode); if (rd) { const newQuestions = generateMathQuestions(gameState.roomCode, rd.settings.type, rd.settings.difficulty, rd.settings.q_count); await updateRoomData(gameState.roomCode, { status: 'started', questions: newQuestions, gameStartedAt: firebase.database.ServerValue.TIMESTAMP }); } };
     ['game-timer', 'question-count', 'game-type', 'game-difficulty'].forEach(elId => { dom[elId.replace('-', '_')].onchange = (e) => { if (gameState.isHost) { const key = e.target.id.includes('timer') ? 'timer' : (e.target.id.includes('count') ? 'q_count' : e.target.id.split('-')[1]); updateRoomData(gameState.roomCode, { [`settings/${key}`]: e.target.value }); } }; });
@@ -183,23 +169,17 @@ const db = firebase.database();
     dom.answer_key_btn.onclick = async () => { const lang = document.documentElement.lang; const roomData = await getRoomData(gameState.roomCode); if (!roomData || !roomData.results) return; const myResult = roomData.results[gameState.playerName]; if (!myResult) return; const questions = roomData.questions; let keyHTML = `<h3 data-key="answer_key">${translations[lang].answer_key}</h3><table>`; questions.forEach((q, i) => { const playerAnswerObj = myResult.answers.find(a => a.qIndex === i); let answerText; if (!playerAnswerObj || playerAnswerObj.answer === null) { answerText = `<span class="wrong-ans">${translations[lang].unanswered}</span>`; } else if (playerAnswerObj.answer === q.answer) { answerText = `<span class="correct-ans">${translations[lang].correct}</span>`; } else { answerText = `<span class="wrong-ans">${translations[lang].incorrect}</span> (${translations[lang].your_answer}: ${displayNum(playerAnswerObj.answer)})`; } const qText = q.question.split(' ').map(p => isNaN(p) ? p : displayNum(p)).join(' '); keyHTML += `<tr><td>${displayNum(i+1)}. ${qText} = ${displayNum(q.answer)}</td><td>${answerText}</td></tr>`; }); keyHTML += '</table>'; dom.answer_key_container.innerHTML = keyHTML; dom.answer_key_container.style.display = dom.answer_key_container.style.display === 'block' ? 'none' : 'block'; };
     dom.lang_or.onclick = () => setLanguage('or');
     dom.lang_en.onclick = () => setLanguage('en');
-    dom.share_btn.onclick = () => {
-        const url = new URL(window.location);
-        url.hash = `join/${gameState.roomCode}`;
-        navigator.clipboard.writeText(url.toString()).then(() => {
-            alert(translations[document.documentElement.lang].invite_copied);
-        });
-    };
+    dom.share_btn.onclick = () => { const url = new URL(window.location); url.hash = `join/${gameState.roomCode}`; navigator.clipboard.writeText(url.toString()).then(() => { alert(translations[document.documentElement.lang].invite_copied); }); };
 
     // --- Initialization and Routing ---
     async function handleRouting() {
+        if (!appInitialized) return;
         const hash = window.location.hash.replace('#', '');
         const [screen, param] = hash.split('/');
         
         const playerNameFromSession = sessionStorage.getItem('sbg_playerName');
         const roomCodeFromSession = sessionStorage.getItem('sbg_roomCode');
 
-        // Check if we can rejoin a session
         if (param && playerNameFromSession && param === roomCodeFromSession) {
             const roomData = await getRoomData(param);
             if (roomData && roomData.players && roomData.players[playerNameFromSession]) {
@@ -207,33 +187,43 @@ const db = firebase.database();
                 gameState.playerName = playerNameFromSession;
                 gameState.isHost = roomData.players[playerNameFromSession].isHost;
                 gameState.questions = roomData.questions || [];
-
                 if (roomData.status === 'lobby' && screen === 'lobby') { enterLobby(param, playerNameFromSession, gameState.isHost); return; }
                 if (roomData.status === 'started' && screen === 'game') { startGame(roomData); return; }
                 if (roomData.status === 'finished' && screen === 'results') { showScreen('results-screen', false); startResultsListener(); return; }
             }
         }
         
-        // Default routing
         cleanUpSession();
         if (screen === 'croom') { showScreen('create-screen', false); } 
         else if (screen === 'jroom') { showScreen('join-screen', false); }
-        else if (screen === 'join' && param) {
-            dom.join_room_code_num.value = param.replace('SB', '');
-            showScreen('join-screen', false);
-        }
+        else if (screen === 'join' && param) { dom.join_room_code_num.value = param.replace('SB', ''); showScreen('join-screen', false); }
         else { showScreen('landing-screen'); }
     }
 
-    const init = () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const langFromUrl = urlParams.get('lang');
-        const langFromStorage = localStorage.getItem('preferredLang');
-        setLanguage(langFromUrl || langFromStorage || 'or');
-        
-        handleRouting();
-        window.addEventListener('popstate', handleRouting);
-    };
+    function init() {
+        try {
+            if (!firebaseConfig || !firebaseConfig.apiKey || firebaseConfig.apiKey.includes("YOUR_")) {
+                document.body.innerHTML = `<div style="padding: 2rem; text-align: center; color: red; font-size: 1.2rem;"><h1>Configuration Error</h1><p>Firebase keys are missing. Please paste your firebaseConfig object into index.html.</p></div>`;
+                return;
+            }
+            db = firebase.database();
+            db.ref(".info/connected").on("value", (snap) => {
+                if (snap.val() === true && !appInitialized) {
+                    appInitialized = true;
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const langFromUrl = urlParams.get('lang');
+                    const langFromStorage = localStorage.getItem('preferredLang');
+                    setLanguage(langFromUrl || langFromStorage || 'or');
+                    handleRouting();
+                    window.addEventListener('popstate', handleRouting);
+                }
+            });
+        } catch (error) {
+            console.error("Firebase initialization failed:", error);
+            document.body.innerHTML = `<div style="padding: 2rem; text-align: center; color: red; font-size: 1.2rem;"><h1>Initialization Error</h1><p>Could not connect to Firebase. Please check your config keys and console for errors.</p></div>`;
+        }
+    }
+
     init();
 });
 </script>
