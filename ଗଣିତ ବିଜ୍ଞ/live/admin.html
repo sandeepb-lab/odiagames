@@ -2,7 +2,6 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Panel</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -18,12 +17,15 @@
         table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
         th, td { padding: 0.8rem; border: 1px solid #ddd; }
         th { background-color: var(--secondary-color); color: white; }
-        .room-details-card { border: 2px solid var(--primary-color); margin-bottom: 2rem; }
-        .room-header { background-color: var(--primary-color); color: white; padding: 1rem; border-radius: 10px 10px 0 0; display: flex; justify-content: space-between; align-items: center; }
+        .room-details-card { border: 2px solid var(--primary-color); margin-bottom: 2rem; padding: 0; }
+        .room-header { background-color: var(--primary-color); color: white; padding: 1rem; border-radius: 10px 10px 0 0; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;}
         .room-header h2 { color: white; margin: 0; text-align: left; }
         .room-header p { margin: 0; font-size: 0.9rem; }
         .room-header strong { color: var(--accent-color); }
-        .btn-delete { background-color: var(--danger-color); padding: 0.5rem 1rem; font-size: 0.9rem; width: auto; margin: 0;}
+        .room-actions { display: flex; gap: 0.5rem; }
+        .btn-small { padding: 0.5rem 1rem; font-size: 0.9rem; width: auto; margin: 0;}
+        .btn-delete { background-color: var(--danger-color); }
+        .btn-report { background-color: var(--success-color); }
         .room-content { padding: 1rem; }
         .details-toggle { cursor: pointer; color: var(--primary-color); font-weight: bold; text-decoration: underline; }
         .player-details-row { display: none; }
@@ -48,152 +50,122 @@
              <div id="all-rooms-container"></div>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const dom = {};
-            ['login-screen', 'admin-panel', 'login-btn', 'all-rooms-container', 'username', 'password', 'login-error'].forEach(id => dom[id.replace(/-/g,'_')] = document.getElementById(id));
-            
-            const getRoomData = rc => JSON.parse(localStorage.getItem(`room_${rc}`));
-            const seededRandom = seed => { let s = seed.split('').reduce((a, b) => (a = (a << 5) - a + b.charCodeAt(0), a & a), 0); return () => (s = Math.imul(s ^ s >>> 15, s | 1), s ^= s + Math.imul(s ^ s >>> 7, s | 61), ((s ^ s >>> 14) >>> 0) / 4294967296); };
-            const generateMathQuestions = (seed, type, difficulty, count) => { const r = seededRandom(seed), o=type==='mix'?['+','-','*','/']:{add:['+'],sub:['-'],mul:['*'],div:['/']}[type], ranges={easy:[10,50,10,10],medium:[50,100,25,15],hard:[500,1000,50,30]}, [add,sub,mul,div]=ranges[difficulty]; return Array.from({length:count},()=>{let n1,n2,q,a,op=o[Math.floor(r()*o.length)]; switch(op){case'+':n1=Math.floor(r()*add)+1;n2=Math.floor(r()*add)+1;q=`${n1} + ${n2}`;a=n1+n2;break;case'-':n1=Math.floor(r()*sub)+(add);n2=Math.floor(r()*(n1-1))+1;q=`${n1} - ${n2}`;a=n1-n2;break;case'*':n1=Math.floor(r()*mul)+2;n2=Math.floor(r()*mul)+2;q=`${n1} × ${n2}`;a=n1*n2;break;case'/':const d=Math.floor(r()*div)+2,rs=Math.floor(r()*div)+2;n1=d*rs;n2=d;q=`${n1} ÷ ${n2}`;a=rs;break;}const opts=new Set([a]);while(opts.size<4){const w=a+(Math.floor(r()*20)+1)*(r()>.5?1:-1);if(w!==a&&w>=0)opts.add(w);}return{question:q,options:Array.from(opts).sort(()=>r()-.5),answer:a};});};
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+    // Your unique Firebase keys have been added here.
+    const firebaseConfig = {
+      apiKey: "AIzaSyAYurYfkcGSbRmLNBtXmX60iml5ty8-ipI",
+      authDomain: "sbg-math-game.firebaseapp.com",
+      databaseURL: "https://sbg-math-game-default-rtdb.firebaseio.com",
+      projectId: "sbg-math-game",
+      storageBucket: "sbg-math-game.firebasestorage.app",
+      messagingSenderId: "520015027553",
+      appId: "1:520015027553:web:17c396b24da3fa6e8f3920",
+      measurementId: "G-S9KFTEQZ9P"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
 
-            // This function runs first, when the admin page loads.
-            function cleanupOldRooms() {
-                const now = new Date().getTime();
-                const twentyFourHours = 24 * 60 * 60 * 1000;
-                Object.keys(localStorage).filter(k => k.startsWith('room_')).forEach(key => {
-                    const roomData = getRoomData(key.replace('room_', ''));
-                    // Add a creation time if it doesn't exist (for backward compatibility)
-                    if (!roomData.createdAt) {
-                        roomData.createdAt = now;
-                        localStorage.setItem(key, JSON.stringify(roomData));
-                    }
-                    // Check if the room is older than 24 hours
-                    if (now - roomData.createdAt > twentyFourHours) {
-                        localStorage.removeItem(key);
-                        console.log(`Removed expired room: ${key}`);
-                    }
-                });
+    const dom = {};
+    ['login-screen', 'admin-panel', 'login-btn', 'all-rooms-container', 'username', 'password', 'login-error'].forEach(id => dom[id.replace(/-/g,'_')] = document.getElementById(id));
+
+    const getRoomData = async (rc) => { const snapshot = await db.ref('rooms/'+rc).get(); return snapshot.exists() ? snapshot.val() : null; };
+
+    function generateAndDownloadReport(roomCode, roomData) {
+        if (!roomData) { alert("Could not find data for this room."); return; }
+        let reportContent = `GAME REPORT FOR ROOM: ${roomCode}\n========================================\n\n--- Room Details ---\nStatus: ${roomData.status}\nPassword: ${roomData.password || 'None'}\nCreated At: ${new Date(roomData.createdAt).toLocaleString()}\n\n--- Game Settings ---\nTotal Time: ${roomData.settings.timer / 60} minutes\nNumber of Questions: ${roomData.settings.q_count}\nGame Type: ${roomData.settings.type}\nDifficulty: ${roomData.settings.difficulty}\n\n`;
+        if (roomData.questions) { reportContent += `--- Question & Answer Key ---\n`; roomData.questions.forEach((q, i) => { reportContent += `Q${i + 1}: ${q.question} = ${q.answer}\n`; }); reportContent += `\n`; }
+        if (roomData.status === 'finished' && roomData.results) { reportContent += `--- Final Results & Player Answers ---\n`; const sortedResults = Object.values(roomData.results).sort((a, b) => b.score - a.score); sortedResults.forEach((player, i) => { reportContent += `\n#${i + 1} | Player: ${player.name} | Score: ${player.score}/${roomData.settings.q_count}\n`; if (player.answers) { player.answers.forEach(ans => { const status = ans.answer === ans.correctAnswer ? "Correct" : (ans.answer === null ? "Unanswered" : "Incorrect"); reportContent += `  Q${ans.qIndex + 1} (${ans.question}): You answered: ${ans.answer === null ? 'N/A' : ans.answer}. Correct was: ${ans.correctAnswer}. [${status}]\n`; }); } });
+        } else if (roomData.players) { reportContent += `--- Players in Lobby ---\n`; Object.values(roomData.players).forEach(p => { reportContent += `- ${p.name} ${p.isHost ? '(Host)' : ''}\n`; }); }
+        const blob = new Blob([reportContent], { type: 'text/plain;charset=utf-8' }); const link = document.createElement('a'); link.href = URL.createObjectURL(blob); link.download = `${roomCode}_Report.txt`; document.body.appendChild(link); link.click(); document.body.removeChild(link);
+    }
+
+    function cleanupOldRooms(snapshot) {
+        const now = new Date().getTime();
+        const twentyFourHours = 24 * 60 * 60 * 1000;
+        snapshot.forEach(childSnapshot => {
+            const roomData = childSnapshot.val();
+            if (roomData.createdAt && (now - roomData.createdAt > twentyFourHours)) {
+                console.log(`Removing expired room: ${childSnapshot.key}`);
+                childSnapshot.ref.remove();
             }
-
-            // This is the main function to display rooms on the admin panel
-            function loadAllRoomsData() {
-                dom.all_rooms_container.innerHTML = '';
-                
-                // Get all room keys and sort them by creation date (newest first)
-                const roomKeys = Object.keys(localStorage)
-                    .filter(k => k.startsWith('room_'))
-                    .sort((a, b) => {
-                        const roomA = getRoomData(a.replace('room_', ''));
-                        const roomB = getRoomData(b.replace('room_', ''));
-                        // Ensure createdAt exists, default to 0 if not
-                        return (roomB.createdAt || 0) - (roomA.createdAt || 0);
-                    });
-
-                if (roomKeys.length === 0) {
-                    dom.all_rooms_container.innerHTML = '<p style="text-align:center;">No game rooms found in this browser\'s storage.</p>';
-                    return;
-                }
-
-                roomKeys.forEach(key => {
-                    const roomCode = key.replace('room_', '');
-                    const roomData = getRoomData(roomCode);
-                    const card = document.createElement('div');
-                    card.className = 'card room-details-card';
-                    card.id = `admin-card-${roomCode}`;
-                    
-                    let contentHTML = `
-                        <div class="room-header">
-                            <div>
-                                <h2>Room: <strong>${roomCode}</strong></h2>
-                                <p>Password: <strong>${roomData.password || 'None'}</strong> | Status: <strong>${roomData.status}</strong></p>
-                            </div>
-                            <button class="btn-delete" data-roomcode="${roomCode}">Delete Room</button>
-                        </div>
-                        <div class="room-content">`;
-
-                    if (roomData.status === 'finished' && roomData.results && roomData.results.length > 0) {
-                        const sortedResults = roomData.results.sort((a, b) => b.score - a.score);
-                        contentHTML += `
-                            <h3>Final Scores</h3>
-                            <table>
-                                <thead><tr><th>Rank</th><th>Name</th><th>Score</th><th>Details</th></tr></thead>
-                                <tbody>
-                                    ${sortedResults.map((p, i) => `
-                                        <tr>
-                                            <td>${i + 1}</td>
-                                            <td>${p.name}</td>
-                                            <td>${p.score} / ${roomData.settings.q_count}</td>
-                                            <td><span class="details-toggle" data-player-index="${i}" data-room-code="${roomCode}">View Answers</span></td>
-                                        </tr>
-                                        <tr class="player-details-row"><td colspan="4"><div class="player-details"></div></td></tr>
-                                    `).join('')}
-                                </tbody>
-                            </table>`;
-                    } else {
-                        contentHTML += `<h3>Lobby Status</h3><p>This game is in the '${roomData.status}' state. No final results to display.</p><h4>Players in Lobby:</h4><ul>${roomData.players.map(p => `<li>${p.name} ${p.isHost ? '👑' : ''}</li>`).join('') || '<li>No players currently in lobby.</li>'}</ul>`;
-                    }
-                    contentHTML += '</div>';
-                    card.innerHTML = contentHTML;
-                    dom.all_rooms_container.appendChild(card);
-                });
-            }
-
-            // Use event delegation for all dynamic buttons
-            dom.all_rooms_container.addEventListener('click', (event) => {
-                const target = event.target;
-                if (target.classList.contains('btn-delete')) {
-                    const roomCode = target.dataset.roomcode;
-                    if (confirm(`Are you sure you want to PERMANENTLY DELETE room "${roomCode}"? This cannot be undone.`)) {
-                        localStorage.removeItem(`room_${roomCode}`);
-                        document.getElementById(`admin-card-${roomCode}`).remove();
-                    }
-                }
-                if (target.classList.contains('details-toggle')) {
-                    const { playerIndex, roomCode } = target.dataset;
-                    const detailsRow = target.closest('tr').nextElementSibling;
-                    const detailsContentDiv = detailsRow.querySelector('.player-details');
-                    
-                    if (detailsRow.style.display === 'table-row') {
-                        detailsRow.style.display = 'none';
-                        return;
-                    }
-                    
-                    const roomData = getRoomData(roomCode);
-                    const questions = (roomData.customQuestions && roomData.customQuestions.length > 0) ? roomData.customQuestions : generateMathQuestions(roomCode, roomData.settings.type, roomData.settings.difficulty, roomData.settings.q_count);
-                    const player = roomData.results.sort((a,b) => b.score - a.score)[playerIndex];
-                    
-                    let detailsContent = `<h4>Answer Report for ${player.name}</h4><ul>`;
-                    questions.forEach((q, i) => {
-                        const playerAnswerObj = player.answers.find(a => a.qIndex === i);
-                        let answerText;
-                        if (!playerAnswerObj || playerAnswerObj.answer === null) {
-                            answerText = `<span class="wrong-ans">Unanswered</span>`;
-                        } else if (playerAnswerObj.answer === q.answer) {
-                            answerText = `<span class="correct-ans">Correct</span>`;
-                        } else {
-                            answerText = `<span class="wrong-ans">Incorrect</span> (Answered: ${playerAnswerObj.answer})`;
-                        }
-                        detailsContent += `<li><strong>Q${i+1}. ${q.question}</strong> = ${q.answer} | ${answerText}</li>`;
-                    });
-                    detailsContent += `</ul>`;
-                    detailsContentDiv.innerHTML = detailsContent;
-                    detailsRow.style.display = 'table-row';
-                }
-            });
-
-            // Initial Login Setup
-            dom.login_btn.onclick = () => {
-                if (dom.username.value === 'sbg' && dom.password.value === 'sbg90') {
-                    dom.login_screen.style.display = 'none';
-                    dom.admin_panel.style.display = 'block';
-                    cleanupOldRooms(); // Run cleanup on successful login
-                    loadAllRoomsData();
-                } else {
-                    dom.login_error.textContent = 'Invalid credentials.';
-                }
-            };
         });
-    </script>
+    }
+    
+    function loadAllRoomsData() {
+        const roomsRef = db.ref('rooms').orderByChild('createdAt');
+        roomsRef.on('value', (snapshot) => {
+            dom.all_rooms_container.innerHTML = '';
+            if (!snapshot.exists()) { dom.all_rooms_container.innerHTML = '<p style="text-align:center;">No game rooms found.</p>'; return; }
+            
+            cleanupOldRooms(snapshot);
+
+            let cardsHTML = '';
+            const roomsArray = [];
+            snapshot.forEach(child => { roomsArray.push({key: child.key, val: child.val()}); });
+
+            roomsArray.reverse().forEach(room => {
+                const roomCode = room.key;
+                const roomData = room.val;
+                if(!roomData.settings) return;
+                
+                let card = `<div class="card room-details-card" id="admin-card-${roomCode}"><div class="room-header"><div><h2>Room: <strong>${roomCode}</strong></h2><p>Password: <strong>${roomData.password || 'None'}</strong> | Status: <strong>${roomData.status}</strong></p><p>Created: ${new Date(roomData.createdAt).toLocaleString()}</p></div><div class="room-actions"><button class="btn-small btn-report" data-roomcode="${roomCode}">Report</button><button class="btn-small btn-delete" data-roomcode="${roomCode}">Delete</button></div></div><div class="room-content">`;
+                if (roomData.status === 'finished' && roomData.results) {
+                    const sortedResults = Object.values(roomData.results).sort((a, b) => b.score - a.score);
+                    card += `<h3>Final Scores</h3><table><thead><tr><th>Rank</th><th>Name</th><th>Score</th><th>Details</th></tr></thead><tbody>
+                        ${sortedResults.map((p, i) => `<tr><td>${i + 1}</td><td>${p.name}</td><td>${p.score} / ${roomData.settings.q_count}</td><td><span class="details-toggle" data-player-index="${i}" data-room-code="${roomCode}">Answers</span></td></tr><tr class="player-details-row"><td colspan="4"><div class="player-details"></div></td></tr>`).join('')}
+                    </tbody></table>`;
+                } else if (roomData.players) {
+                    card += `<h3>Lobby Status</h3><h4>Players in Lobby:</h4><ul>${Object.values(roomData.players).map(p => `<li>${p.name} ${p.isHost ? '👑' : ''}</li>`).join('') || '<li>No players currently in lobby.</li>'}</ul>`;
+                }
+                card += '</div></div>';
+                cardsHTML += card;
+            });
+            dom.all_rooms_container.innerHTML = cardsHTML;
+        });
+    }
+
+    dom.all_rooms_container.addEventListener('click', async (event) => {
+        const target = event.target;
+        if (target.classList.contains('btn-delete')) {
+            const roomCode = target.dataset.roomcode;
+            if (confirm(`Are you sure you want to PERMANENTLY DELETE room "${roomCode}"?`)) {
+                await db.ref(`rooms/${roomCode}`).remove();
+            }
+        }
+        if (target.classList.contains('btn-report')) {
+            const roomCode = target.dataset.roomcode;
+            const roomData = await getRoomData(roomCode);
+            generateAndDownloadReport(roomCode, roomData);
+        }
+        if (target.classList.contains('details-toggle')) {
+            const { playerIndex, roomCode } = target.dataset;
+            const roomData = await getRoomData(roomCode);
+            const detailsRow = target.closest('tr').nextElementSibling;
+            if (detailsRow.style.display === 'table-row') { detailsRow.style.display = 'none'; return; }
+            const detailsContentDiv = detailsRow.querySelector('.player-details');
+            const questions = roomData.questions;
+            const player = Object.values(roomData.results).sort((a,b) => b.score - a.score)[playerIndex];
+            let detailsContent = `<h4>Answer Report for ${player.name}</h4><ul>`;
+            questions.forEach((q, i) => { const playerAnswerObj = player.answers.find(a => a.qIndex === i); let answerText; if (!playerAnswerObj || playerAnswerObj.answer === null) { answerText = `<span class="wrong-ans">Unanswered</span>`; } else if (playerAnswerObj.answer === q.answer) { answerText = `<span class="correct-ans">Correct</span>`; } else { answerText = `<span class="wrong-ans">Incorrect</span> (Answered: ${playerAnswerObj.answer})`; } detailsContent += `<li><strong>Q${i+1}. ${q.question}</strong> = ${q.answer} | ${answerText}</li>`; });
+            detailsContent += `</ul>`;
+            detailsContentDiv.innerHTML = detailsContent;
+            detailsRow.style.display = 'table-row';
+        }
+    });
+
+    dom.login_btn.onclick = () => {
+        if (dom.username.value === 'sbg' && dom.password.value === 'sbg90') {
+            dom.login_screen.style.display = 'none';
+            dom.admin_panel.style.display = 'block';
+            loadAllRoomsData();
+        } else {
+            dom.login_error.textContent = 'Invalid credentials.';
+        }
+    };
+});
+</script>
 </body>
 </html>
