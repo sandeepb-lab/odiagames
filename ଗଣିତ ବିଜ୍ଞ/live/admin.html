@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Panel</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --primary-color: #0A2463; --secondary-color: #3E92CC; --accent-color: #FF9F1C; --danger-color: #dc3545; --success-color: #28a745; --text-dark: #121212; --bg-light: #F4F7FC; --card-bg: #FFFFFF; --shadow: 0 4px 15px rgba(0, 0, 0, 0.1); }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg-light); color: var(--text-dark); padding: 2rem; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .card { background-color: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: var(--shadow); margin-bottom: 2rem; }
+        h1, h2, h3 { color: var(--primary-color); text-align: center; margin-bottom: 1rem; }
+        .btn { background-color: var(--accent-color); color: white; padding: 0.8rem 2rem; border-radius: 20px; border: none; cursor: pointer; width: 100%; font-size: 1.1rem; margin-top: 0.5rem;}
+        #admin-panel { display: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 1rem; }
+        th, td { padding: 0.8rem; border: 1px solid #ddd; }
+        th { background-color: var(--secondary-color); color: white; }
+        .room-details-card { border: 2px solid var(--primary-color); margin-bottom: 2rem; }
+        .room-header { background-color: var(--primary-color); color: white; padding: 1rem; border-radius: 10px 10px 0 0; display: flex; justify-content: space-between; align-items: center; }
+        .room-header h2 { color: white; margin: 0; text-align: left; }
+        .room-header p { margin: 0; font-size: 0.9rem; }
+        .room-header strong { color: var(--accent-color); }
+        .btn-delete { background-color: var(--danger-color); padding: 0.5rem 1rem; font-size: 0.9rem; width: auto; margin: 0;}
+        .room-content { padding: 1rem; }
+        .details-toggle { cursor: pointer; color: var(--primary-color); font-weight: bold; text-decoration: underline; }
+        .player-details-row { display: none; }
+        .player-details { background-color: #f0f8ff; padding: 1rem; margin-top: -1px; border: 1px solid #ddd; }
+        .player-details ul { list-style: none; padding: 0; }
+        .player-details li { padding: 0.5rem; border-bottom: 1px solid #e0e0e0; font-size: 0.9rem; }
+        .correct-ans { color: var(--success-color); }
+        .wrong-ans { color: var(--danger-color); }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div id="login-screen" class="card">
+            <h1>Admin Login</h1>
+            <div class="form-group"><input type="text" id="username" placeholder="Username" style="box-sizing: border-box; width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;"></div>
+            <div class="form-group"><input type="password" id="password" placeholder="Password" style="box-sizing: border-box; width: 100%; padding: 0.8rem; border: 1px solid #ccc; border-radius: 8px; font-size: 1rem;"></div>
+            <button id="login-btn" class="btn">Login</button>
+            <div id="login-error" class="error" style="color: var(--danger-color); text-align: center; min-height: 1.2em; margin-top: 1rem;"></div>
+        </div>
+        <div id="admin-panel">
+             <h1>Admin Master Panel</h1>
+             <div id="all-rooms-container"></div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const dom = {};
+            ['login-screen', 'admin-panel', 'login-btn', 'all-rooms-container', 'username', 'password', 'login-error'].forEach(id => dom[id.replace(/-/g,'_')] = document.getElementById(id));
+            
+            const getRoomData = rc => JSON.parse(localStorage.getItem(`room_${rc}`));
+            const seededRandom = seed => { let s = seed.split('').reduce((a, b) => (a = (a << 5) - a + b.charCodeAt(0), a & a), 0); return () => (s = Math.imul(s ^ s >>> 15, s | 1), s ^= s + Math.imul(s ^ s >>> 7, s | 61), ((s ^ s >>> 14) >>> 0) / 4294967296); };
+            const generateMathQuestions = (seed, type, difficulty, count) => { const r = seededRandom(seed), o=type==='mix'?['+','-','*','/']:{add:['+'],sub:['-'],mul:['*'],div:['/']}[type], ranges={easy:[10,50,10,10],medium:[50,100,25,15],hard:[500,1000,50,30]}, [add,sub,mul,div]=ranges[difficulty]; return Array.from({length:count},()=>{let n1,n2,q,a,op=o[Math.floor(r()*o.length)]; switch(op){case'+':n1=Math.floor(r()*add)+1;n2=Math.floor(r()*add)+1;q=`${n1} + ${n2}`;a=n1+n2;break;case'-':n1=Math.floor(r()*sub)+(add);n2=Math.floor(r()*(n1-1))+1;q=`${n1} - ${n2}`;a=n1-n2;break;case'*':n1=Math.floor(r()*mul)+2;n2=Math.floor(r()*mul)+2;q=`${n1} × ${n2}`;a=n1*n2;break;case'/':const d=Math.floor(r()*div)+2,rs=Math.floor(r()*div)+2;n1=d*rs;n2=d;q=`${n1} ÷ ${n2}`;a=rs;break;}const opts=new Set([a]);while(opts.size<4){const w=a+(Math.floor(r()*20)+1)*(r()>.5?1:-1);if(w!==a&&w>=0)opts.add(w);}return{question:q,options:Array.from(opts).sort(()=>r()-.5),answer:a};});};
+
+            // This function runs first, when the admin page loads.
+            function cleanupOldRooms() {
+                const now = new Date().getTime();
+                const twentyFourHours = 24 * 60 * 60 * 1000;
+                Object.keys(localStorage).filter(k => k.startsWith('room_')).forEach(key => {
+                    const roomData = getRoomData(key.replace('room_', ''));
+                    // Add a creation time if it doesn't exist (for backward compatibility)
+                    if (!roomData.createdAt) {
+                        roomData.createdAt = now;
+                        localStorage.setItem(key, JSON.stringify(roomData));
+                    }
+                    // Check if the room is older than 24 hours
+                    if (now - roomData.createdAt > twentyFourHours) {
+                        localStorage.removeItem(key);
+                        console.log(`Removed expired room: ${key}`);
+                    }
+                });
+            }
+
+            // This is the main function to display rooms on the admin panel
+            function loadAllRoomsData() {
+                dom.all_rooms_container.innerHTML = '';
+                
+                // Get all room keys and sort them by creation date (newest first)
+                const roomKeys = Object.keys(localStorage)
+                    .filter(k => k.startsWith('room_'))
+                    .sort((a, b) => {
+                        const roomA = getRoomData(a.replace('room_', ''));
+                        const roomB = getRoomData(b.replace('room_', ''));
+                        // Ensure createdAt exists, default to 0 if not
+                        return (roomB.createdAt || 0) - (roomA.createdAt || 0);
+                    });
+
+                if (roomKeys.length === 0) {
+                    dom.all_rooms_container.innerHTML = '<p style="text-align:center;">No game rooms found in this browser\'s storage.</p>';
+                    return;
+                }
+
+                roomKeys.forEach(key => {
+                    const roomCode = key.replace('room_', '');
+                    const roomData = getRoomData(roomCode);
+                    const card = document.createElement('div');
+                    card.className = 'card room-details-card';
+                    card.id = `admin-card-${roomCode}`;
+                    
+                    let contentHTML = `
+                        <div class="room-header">
+                            <div>
+                                <h2>Room: <strong>${roomCode}</strong></h2>
+                                <p>Password: <strong>${roomData.password || 'None'}</strong> | Status: <strong>${roomData.status}</strong></p>
+                            </div>
+                            <button class="btn-delete" data-roomcode="${roomCode}">Delete Room</button>
+                        </div>
+                        <div class="room-content">`;
+
+                    if (roomData.status === 'finished' && roomData.results && roomData.results.length > 0) {
+                        const sortedResults = roomData.results.sort((a, b) => b.score - a.score);
+                        contentHTML += `
+                            <h3>Final Scores</h3>
+                            <table>
+                                <thead><tr><th>Rank</th><th>Name</th><th>Score</th><th>Details</th></tr></thead>
+                                <tbody>
+                                    ${sortedResults.map((p, i) => `
+                                        <tr>
+                                            <td>${i + 1}</td>
+                                            <td>${p.name}</td>
+                                            <td>${p.score} / ${roomData.settings.q_count}</td>
+                                            <td><span class="details-toggle" data-player-index="${i}" data-room-code="${roomCode}">View Answers</span></td>
+                                        </tr>
+                                        <tr class="player-details-row"><td colspan="4"><div class="player-details"></div></td></tr>
+                                    `).join('')}
+                                </tbody>
+                            </table>`;
+                    } else {
+                        contentHTML += `<h3>Lobby Status</h3><p>This game is in the '${roomData.status}' state. No final results to display.</p><h4>Players in Lobby:</h4><ul>${roomData.players.map(p => `<li>${p.name} ${p.isHost ? '👑' : ''}</li>`).join('') || '<li>No players currently in lobby.</li>'}</ul>`;
+                    }
+                    contentHTML += '</div>';
+                    card.innerHTML = contentHTML;
+                    dom.all_rooms_container.appendChild(card);
+                });
+            }
+
+            // Use event delegation for all dynamic buttons
+            dom.all_rooms_container.addEventListener('click', (event) => {
+                const target = event.target;
+                if (target.classList.contains('btn-delete')) {
+                    const roomCode = target.dataset.roomcode;
+                    if (confirm(`Are you sure you want to PERMANENTLY DELETE room "${roomCode}"? This cannot be undone.`)) {
+                        localStorage.removeItem(`room_${roomCode}`);
+                        document.getElementById(`admin-card-${roomCode}`).remove();
+                    }
+                }
+                if (target.classList.contains('details-toggle')) {
+                    const { playerIndex, roomCode } = target.dataset;
+                    const detailsRow = target.closest('tr').nextElementSibling;
+                    const detailsContentDiv = detailsRow.querySelector('.player-details');
+                    
+                    if (detailsRow.style.display === 'table-row') {
+                        detailsRow.style.display = 'none';
+                        return;
+                    }
+                    
+                    const roomData = getRoomData(roomCode);
+                    const questions = (roomData.customQuestions && roomData.customQuestions.length > 0) ? roomData.customQuestions : generateMathQuestions(roomCode, roomData.settings.type, roomData.settings.difficulty, roomData.settings.q_count);
+                    const player = roomData.results.sort((a,b) => b.score - a.score)[playerIndex];
+                    
+                    let detailsContent = `<h4>Answer Report for ${player.name}</h4><ul>`;
+                    questions.forEach((q, i) => {
+                        const playerAnswerObj = player.answers.find(a => a.qIndex === i);
+                        let answerText;
+                        if (!playerAnswerObj || playerAnswerObj.answer === null) {
+                            answerText = `<span class="wrong-ans">Unanswered</span>`;
+                        } else if (playerAnswerObj.answer === q.answer) {
+                            answerText = `<span class="correct-ans">Correct</span>`;
+                        } else {
+                            answerText = `<span class="wrong-ans">Incorrect</span> (Answered: ${playerAnswerObj.answer})`;
+                        }
+                        detailsContent += `<li><strong>Q${i+1}. ${q.question}</strong> = ${q.answer} | ${answerText}</li>`;
+                    });
+                    detailsContent += `</ul>`;
+                    detailsContentDiv.innerHTML = detailsContent;
+                    detailsRow.style.display = 'table-row';
+                }
+            });
+
+            // Initial Login Setup
+            dom.login_btn.onclick = () => {
+                if (dom.username.value === 'sbg' && dom.password.value === 'sbg90') {
+                    dom.login_screen.style.display = 'none';
+                    dom.admin_panel.style.display = 'block';
+                    cleanupOldRooms(); // Run cleanup on successful login
+                    loadAllRoomsData();
+                } else {
+                    dom.login_error.textContent = 'Invalid credentials.';
+                }
+            };
+        });
+    </script>
+</body>
+</html>
