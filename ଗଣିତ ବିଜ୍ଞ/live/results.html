@@ -2,9 +2,7 @@
 <html lang="or">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ଫଳାଫଳ - Game Results</title>
-    <meta name="description" content="Check game results and detailed answer reports.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+Oriya:wght@400;700&family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -14,7 +12,7 @@
         body.or-lang { font-family: 'Noto Sans Oriya', sans-serif; }
         .container { max-width: 900px; margin: 0 auto; }
         .main-card { background-color: var(--card-bg); padding: 2rem; border-radius: 12px; box-shadow: var(--shadow); }
-        h1, h2 { color: var(--primary-color); text-align: center; margin-bottom: 1.5rem; }
+        h1, h2, h3 { color: var(--primary-color); text-align: center; margin-bottom: 1.5rem; }
         .lang-switcher { display: flex; justify-content: center; margin-bottom: 2rem; gap: 10px; }
         .lang-switcher button { background: #eee; border: none; padding: 0.5rem 1rem; cursor: pointer; border-radius: 20px; font-family: inherit; }
         .lang-switcher button.active { background-color: var(--accent-color); color: white; font-weight: bold; }
@@ -43,90 +41,120 @@
             <div id="results-display-area"></div>
         </div>
     </div>
-    <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const translations = {
-                or: { lang_btn: "ଓଡ଼ିଆ", results_panel_title: "ଫଳାଫଳ ପ୍ୟାନେଲ୍", available_rooms: "ଉପଲବ୍ଧ ଗେମ୍ ରୁମ୍", no_rooms: "କୌଣସି ଗେମ୍ ରୁମ୍ ମିଳିଲା ନାହିଁ |", check_results: "ଫଳାଫଳ ଦେଖନ୍ତୁ", room_not_finished: "ଏହି ଗେମ୍ ଏପର୍ଯ୍ୟନ୍ତ ସମାପ୍ତ ହୋଇନାହିଁ |", results_for: "ପାଇଁ ଫଳାଫଳ", final_scores: "ଅନ୍ତିମ ସ୍କୋର୍", rank: "ରାଙ୍କ୍", name: "ନାମ", score: "ସ୍କୋର୍", details: "ବିବରଣୀ", answer_key: "ଉତ୍ତର ସୂଚୀ", question: "ପ୍ରଶ୍ନ", correct_answer: "ସଠିକ୍ ଉତ୍ତର", player_report_for: "ପାଇଁ ଖେଳାଳି ରିପୋର୍ଟ", your_answer: "ଆପଣଙ୍କ ଉତ୍ତର", correct: "ସଠିକ୍", incorrect: "ଭୁଲ", unanswered: "ଉତ୍ତର ଦିଆଯାଇନାହିଁ" },
-                en: { lang_btn: "English", results_panel_title: "Results Panel", available_rooms: "Available Game Rooms", no_rooms: "No game rooms found.", check_results: "Check Results", room_not_finished: "This game has not finished yet.", results_for: "Results for", final_scores: "Final Scores", rank: "Rank", name: "Name", score: "Score", details: "Details", answer_key: "Answer Key", question: "Question", correct_answer: "Correct Answer", player_report_for: "Player Report for", your_answer: "Your Answer", correct: "Correct", incorrect: "Incorrect", unanswered: "Unanswered" }
-            };
-            const dom = {};
-            ['lang-or', 'lang-en', 'room-list-container', 'results-display-area'].forEach(id => dom[id.replace(/-/g, '_')] = document.getElementById(id));
-            const toOdiaNumerals = s => String(s).replace(/[0-9]/g, d => '୦୧୨୩୪୫୬୭୮୯'[d]);
-            const displayNum = n => document.documentElement.lang === 'or' ? toOdiaNumerals(n) : String(n);
-            const setLanguage = (lang) => { document.documentElement.lang = lang; document.body.className = `${lang}-lang`; document.querySelectorAll('[data-key]').forEach(el => { const t = translations[lang]?.[el.dataset.key]; if (t) el.innerHTML = t; }); dom.lang_or.textContent = translations.or.lang_btn; dom.lang_en.textContent = translations.en.lang_btn; dom.lang_or.classList.toggle('active', lang === 'or'); dom.lang_en.classList.toggle('active', lang === 'en'); loadRooms(); };
-            const seededRandom = seed => { let s = seed.split('').reduce((a, b) => (a = (a << 5) - a + b.charCodeAt(0), a & a), 0); return () => (s = Math.imul(s ^ s >>> 15, s | 1), s ^= s + Math.imul(s ^ s >>> 7, s | 61), ((s ^ s >>> 14) >>> 0) / 4294967296); };
-            const generateMathQuestions = (seed, type, difficulty, count) => { const r = seededRandom(seed), o=type==='mix'?['+','-','*','/']:{add:['+'],sub:['-'],mul:['*'],div:['/']}[type], ranges={easy:[10,50,10,10],medium:[50,100,25,15],hard:[500,1000,50,30]}, [add,sub,mul,div]=ranges[difficulty]; return Array.from({length:count},()=>{let n1,n2,q,a,op=o[Math.floor(r()*o.length)]; switch(op){case'+':n1=Math.floor(r()*add)+1;n2=Math.floor(r()*add)+1;q=`${n1} + ${n2}`;a=n1+n2;break;case'-':n1=Math.floor(r()*sub)+(add);n2=Math.floor(r()*(n1-1))+1;q=`${n1} - ${n2}`;a=n1-n2;break;case'*':n1=Math.floor(r()*mul)+2;n2=Math.floor(r()*mul)+2;q=`${n1} × ${n2}`;a=n1*n2;break;case'/':const d=Math.floor(r()*div)+2,rs=Math.floor(r()*div)+2;n1=d*rs;n2=d;q=`${n1} ÷ ${n2}`;a=rs;break;}const opts=new Set([a]);while(opts.size<4){const w=a+(Math.floor(r()*20)+1)*(r()>.5?1:-1);if(w!==a&&w>=0)opts.add(w);}return{question:q,options:Array.from(opts).sort(()=>r()-.5),answer:a};});};
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+<script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', () => {
+  const firebaseConfig = {
+  apiKey: "AIzaSyAYurYfkcGSbRmLNBtXmX60iml5ty8-ipI",
+  authDomain: "sbg-math-game.firebaseapp.com",
+  databaseURL: "https://sbg-math-game-default-rtdb.firebaseio.com",
+  projectId: "sbg-math-game",
+  storageBucket: "sbg-math-game.firebasestorage.app",
+  messagingSenderId: "520015027553",
+  appId: "1:520015027553:web:17c396b24da3fa6e8f3920",
+  measurementId: "G-S9KFTEQZ9P"
+};
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
 
-            function loadRooms() {
-                const lang = document.documentElement.lang;
-                dom.room_list_container.innerHTML = `<h2 data-key="available_rooms">${translations[lang].available_rooms}</h2>`;
-                dom.results_display_area.innerHTML = '';
-                let roomsFound = false;
-                Object.keys(localStorage).filter(k => k.startsWith('room_')).forEach(key => {
-                    roomsFound = true;
-                    const roomData = JSON.parse(localStorage.getItem(key));
-                    const roomCode = key.replace('room_', '');
-                    const statusColor = {'lobby':'#3E92CC', 'started':'#FF9F1C', 'finished':'#28a745'}[roomData.status] || '#555';
-                    dom.room_list_container.innerHTML += `<div class="room-card"><div class="room-info"><strong>${roomCode}</strong><span style="background-color: ${statusColor}">${roomData.status}</span></div><button class="btn check-result-btn" data-roomcode="${roomCode}" data-key="check_results">${translations[lang].check_results}</button></div>`;
-                });
-                if (!roomsFound) dom.room_list_container.innerHTML += `<p data-key="no_rooms">${translations[lang].no_rooms}</p>`;
-                document.querySelectorAll('.check-result-btn').forEach(b => b.onclick = handleCheckResult);
+
+    const translations = {
+        or: { lang_btn: "ଓଡ଼ିଆ", results_panel_title: "ଫଳାଫଳ ପ୍ୟାନେଲ୍", available_rooms: "ଉପଲବ୍ଧ ସମାପ୍ତ ଗେମ୍", no_rooms: "କୌଣସି ସମାପ୍ତ ଗେମ୍ ମିଳିଲା ନାହିଁ |", check_results: "ଫଳାଫଳ ଦେଖନ୍ତୁ", loading_msg: "ଲୋଡ୍ କରୁଛି...", room_not_finished: "ଏହି ଗେମ୍ ଏପର୍ଯ୍ୟନ୍ତ ସମାପ୍ତ ହୋଇନାହିଁ |", results_for: "ପାଇଁ ଫଳାଫଳ", final_scores: "ଅନ୍ତିମ ସ୍କୋର୍", rank: "ରାଙ୍କ୍", name: "ନାମ", score: "ସ୍କୋର୍", details: "ବିବରଣୀ", answer_key: "ଉତ୍ତର ସୂଚୀ", question: "ପ୍ରଶ୍ନ", correct_answer: "ସଠିକ୍ ଉତ୍ତର", player_report_for: "ପାଇଁ ଖେଳାଳି ରିପୋର୍ଟ", your_answer: "ଆପଣଙ୍କ ଉତ୍ତର", correct: "ସଠିକ୍", incorrect: "ଭୁଲ", unanswered: "ଉତ୍ତର ଦିଆଯାଇନାହିଁ" },
+        en: { lang_btn: "English", results_panel_title: "Results Panel", available_rooms: "Available Finished Games", no_rooms: "No finished games found.", check_results: "Check Results", loading_msg: "Loading...", room_not_finished: "This game has not finished yet.", results_for: "Results for", final_scores: "Final Scores", rank: "Rank", name: "Name", score: "Score", details: "Details", answer_key: "Answer Key", question: "Question", correct_answer: "Correct Answer", player_report_for: "Player Report for", your_answer: "Your Answer", correct: "Correct", incorrect: "Incorrect", unanswered: "Unanswered" }
+    };
+    const dom = {};
+    ['lang-or', 'lang-en', 'room-list-container', 'results-display-area'].forEach(id => dom[id.replace(/-/g, '_')] = document.getElementById(id));
+    const toOdiaNumerals = s => String(s).replace(/[0-9]/g, d => '୦୧୨୩୪୫୬୭୮୯'[d]);
+    const displayNum = n => document.documentElement.lang === 'or' ? toOdiaNumerals(n) : String(n);
+    const setLanguage = (lang) => { document.documentElement.lang = lang; document.body.className = `${lang}-lang`; document.querySelectorAll('[data-key]').forEach(el => { const t = translations[lang]?.[el.dataset.key]; if (t) el.innerHTML = t; }); dom.lang_or.textContent = translations.or.lang_btn; dom.lang_en.textContent = translations.en.lang_btn; dom.lang_or.classList.toggle('active', lang === 'or'); dom.lang_en.classList.toggle('active', lang === 'en'); loadRooms(); };
+
+    async function loadRooms() {
+        const lang = document.documentElement.lang;
+        dom.room_list_container.innerHTML = `<h2 data-key="available_rooms">${translations[lang].available_rooms}</h2><p>${translations[lang].loading_msg}</p>`;
+        dom.results_display_area.innerHTML = '';
+        
+        try {
+            const roomsRef = db.ref('rooms').orderByChild('status').equalTo('finished');
+            const snapshot = await roomsRef.get();
+            
+            dom.room_list_container.innerHTML = `<h2 data-key="available_rooms">${translations[lang].available_rooms}</h2>`; // Reset
+            
+            if (!snapshot.exists()) {
+                dom.room_list_container.innerHTML += `<p data-key="no_rooms">${translations[lang].no_rooms}</p>`;
+                return;
             }
+            
+            let roomsHTML = '';
+            snapshot.forEach(childSnapshot => {
+                const roomCode = childSnapshot.key;
+                roomsHTML = `<div class="room-card"><div class="room-info"><strong>${roomCode}</strong></div><button class="btn check-result-btn" data-roomcode="${roomCode}" data-key="check_results">${translations[lang].check_results}</button></div>` + roomsHTML; // Prepend to show newest first
+            });
+            dom.room_list_container.innerHTML += roomsHTML;
+            document.querySelectorAll('.check-result-btn').forEach(b => b.onclick = handleCheckResult);
+        } catch (error) {
+            console.error("Error loading rooms:", error);
+            dom.room_list_container.innerHTML += `<p style="color:red;">firebase ସହ ସଂଯୋଗ ହୋଇପାରିଲା ନାହିଁ</p>`;
+        }
+    }
 
-            function handleCheckResult(event) {
-                const roomCode = event.target.dataset.roomcode;
-                const roomData = JSON.parse(localStorage.getItem(`room_${roomCode}`));
-                const lang = document.documentElement.lang;
-                dom.results_display_area.innerHTML = '';
-                if (!roomData) { alert('Error!'); return; }
-                if (roomData.password) { const pass = prompt(`Enter password for room "${roomCode}":`); if (pass !== roomData.password) { alert('Incorrect password!'); return; } }
-                if (roomData.status !== 'finished' || !roomData.results?.length) { dom.results_display_area.innerHTML = `<h2>${translations[lang].results_for} ${roomCode}</h2><p data-key="room_not_finished">${translations[lang].room_not_finished}</p>`; return; }
-                
-                const questions = (roomData.customQuestions && roomData.customQuestions.length > 0) ? roomData.customQuestions : generateMathQuestions(roomCode, roomData.settings.type, roomData.settings.difficulty, roomData.settings.q_count);
-                const sortedResults = roomData.results.sort((a, b) => b.score - a.score);
-                
-                let resultsHTML = `<h2 data-key="final_scores">${translations[lang].final_scores} for ${roomCode}</h2><table><thead><tr><th data-key="rank">${translations[lang].rank}</th><th data-key="name">${translations[lang].name}</th><th data-key="score">${translations[lang].score}</th><th></th></tr></thead><tbody>`;
-                sortedResults.forEach((player, i) => {
-                    resultsHTML += `<tr><td>${displayNum(i + 1)}</td><td>${player.name}</td><td>${displayNum(player.score)}/${displayNum(roomData.settings.q_count)}</td><td><span class="details-toggle" data-player-index="${i}" data-key="details">${translations[lang].details}</span></td></tr>
-                    <tr class="player-details-row" id="details-row-${i}"><td colspan="4"><div class="player-details" id="details-content-${i}"></div></td></tr>`;
-                });
-                resultsHTML += `</tbody></table><h2 data-key="answer_key">${translations[lang].answer_key}</h2><table><thead><tr><th>#</th><th data-key="question">${translations[lang].question}</th><th data-key="correct_answer">${translations[lang].correct_answer}</th></tr></thead><tbody>`;
-                questions.forEach((q, i) => { const qText = q.question.split(' ').map(p => isNaN(p) ? p : displayNum(p)).join(' '); resultsHTML += `<tr><td>${displayNum(i+1)}</td><td>${qText}</td><td>${displayNum(q.answer)}</td></tr>`; });
-                resultsHTML += `</tbody></table>`;
-                dom.results_display_area.innerHTML = resultsHTML;
-
-                document.querySelectorAll('.details-toggle').forEach(toggle => {
-                    toggle.onclick = () => {
-                        const playerIndex = toggle.dataset.playerIndex;
-                        const detailsRow = document.getElementById(`details-row-${playerIndex}`);
-                        const detailsContentDiv = document.getElementById(`details-content-${playerIndex}`);
-                        if (detailsRow.style.display === 'table-row') { detailsRow.style.display = 'none'; return; }
-
-                        const player = sortedResults[playerIndex];
-                        let detailsContent = `<h3 data-key="player_report_for">${translations[lang].player_report_for} ${player.name}</h3><ul>`;
-                        questions.forEach((q, i) => {
-                            const playerAnswerObj = player.answers.find(a => a.qIndex === i);
-                            let answerText, qText = q.question.split(' ').map(p => isNaN(p) ? p : displayNum(p)).join(' ');
-                            if (!playerAnswerObj || playerAnswerObj.answer === null) {
-                                answerText = `<span class="wrong-ans" data-key="unanswered">${translations[lang].unanswered}</span>`;
-                            } else if (playerAnswerObj.answer === q.answer) {
-                                answerText = `<span class="correct-ans" data-key="correct">${translations[lang].correct}</span>`;
-                            } else {
-                                answerText = `<span class="wrong-ans" data-key="incorrect">${translations[lang].incorrect}</span> (<span data-key="your_answer">${translations[lang].your_answer}</span>: ${displayNum(playerAnswerObj.answer)})`;
-                            }
-                            detailsContent += `<li><strong>${displayNum(i+1)}. ${qText}</strong> = ${displayNum(q.answer)} | ${answerText}</li>`;
-                        });
-                        detailsContent += `</ul>`;
-                        detailsContentDiv.innerHTML = detailsContent;
-                        detailsRow.style.display = 'table-row';
-                    };
-                });
-            }
-            dom.lang_or.onclick = () => setLanguage('or');
-            dom.lang_en.onclick = () => setLanguage('en');
-            const init = () => { setLanguage('or'); };
-            init();
+    async function handleCheckResult(event) {
+        const roomCode = event.target.dataset.roomcode;
+        const snapshot = await db.ref(`rooms/${roomCode}`).get();
+        if (!snapshot.exists()) { alert('Room not found!'); return; }
+        const roomData = snapshot.val();
+        
+        const lang = document.documentElement.lang;
+        dom.results_display_area.innerHTML = '';
+        
+        if (roomData.password) { const pass = prompt(`${translations[lang].password_label} for "${roomCode}":`); if (pass !== roomData.password) { alert(translations[lang].password_error); return; } }
+        
+        if (!roomData || roomData.status !== 'finished' || !roomData.results || !roomData.questions) {
+            dom.results_display_area.innerHTML = `<h2>Error</h2><p>This room's data is incomplete or the game has not finished.</p>`;
+            return;
+        }
+        
+        const questions = roomData.questions;
+        const sortedResults = Object.values(roomData.results).sort((a, b) => b.score - a.score);
+        
+        let resultsHTML = `<h2>${translations[lang].results_for} ${roomCode}</h2><h3 data-key="final_scores">${translations[lang].final_scores}</h3><table><thead><tr><th data-key="rank">${translations[lang].rank}</th><th data-key="name">${translations[lang].name}</th><th data-key="score">${translations[lang].score}</th><th></th></tr></thead><tbody>`;
+        sortedResults.forEach((player, i) => {
+            resultsHTML += `<tr><td>${displayNum(i + 1)}</td><td>${player.name}</td><td>${displayNum(player.score)}/${displayNum(roomData.settings.q_count)}</td><td><span class="details-toggle" data-player-index="${i}" data-key="details">${translations[lang].details}</span></td></tr>
+            <tr class="player-details-row" id="details-row-${i}"><td colspan="4"><div class="player-details" id="details-content-${i}"></div></td></tr>`;
         });
-    </script>
+        resultsHTML += `</tbody></table><h3 data-key="answer_key">${translations[lang].answer_key}</h3><table><thead><tr><th>#</th><th data-key="question">${translations[lang].question}</th><th data-key="correct_answer">${translations[lang].correct_answer}</th></tr></thead><tbody>`;
+        questions.forEach((q, i) => { const qText = q.question.split(' ').map(p => isNaN(p) ? p : displayNum(p)).join(' '); resultsHTML += `<tr><td>${displayNum(i+1)}</td><td>${qText}</td><td>${displayNum(q.answer)}</td></tr>`; });
+        resultsHTML += `</tbody></table>`;
+        dom.results_display_area.innerHTML = resultsHTML;
+
+        document.querySelectorAll('.details-toggle').forEach(toggle => {
+            toggle.onclick = () => {
+                const playerIndex = toggle.dataset.playerIndex;
+                const detailsRow = document.getElementById(`details-row-${playerIndex}`);
+                const detailsContentDiv = document.getElementById(`details-content-${playerIndex}`);
+                if (detailsRow.style.display === 'table-row') { detailsRow.style.display = 'none'; return; }
+                const player = sortedResults[playerIndex];
+                let detailsContent = `<h4>${translations[lang].player_report_for} ${player.name}</h4><ul>`;
+                questions.forEach((q, i) => {
+                    const playerAnswerObj = player.answers.find(a => a.qIndex === i);
+                    let answerText, qText = q.question.split(' ').map(p => isNaN(p) ? p : displayNum(p)).join(' ');
+                    if (!playerAnswerObj || playerAnswerObj.answer === null) { answerText = `<span class="wrong-ans">${translations[lang].unanswered}</span>`; }
+                    else if (playerAnswerObj.answer === q.answer) { answerText = `<span class="correct-ans">${translations[lang].correct}</span>`; }
+                    else { answerText = `<span class="wrong-ans">${translations[lang].incorrect}</span> (${translations[lang].your_answer}: ${displayNum(playerAnswerObj.answer)})`; }
+                    detailsContent += `<li><strong>${displayNum(i+1)}. ${qText}</strong> = ${displayNum(q.answer)} | ${answerText}</li>`;
+                });
+                detailsContent += `</ul>`;
+                detailsContentDiv.innerHTML = detailsContent;
+                document.querySelectorAll('.player-details-row').forEach(row => row.style.display = 'none');
+                detailsRow.style.display = 'table-row';
+            };
+        });
+    }
+    dom.lang_or.onclick = () => setLanguage('or');
+    dom.lang_en.onclick = () => setLanguage('en');
+    const init = () => { setLanguage('or'); };
+    init();
+});
+</script>
 </body>
 </html>
