@@ -100,6 +100,19 @@
         #app-footer { text-align: center; padding: 2rem 1rem; margin-top: 3rem; color: var(--text-muted-color); font-size: 0.9em; border-top: 1px solid var(--border-color); transition: color 0.3s, border-color 0.3s; }
         #app-footer a { font-weight: 600; color: var(--text-color); text-decoration: none; transition: color 0.2s; }
         #app-footer a:hover { color: var(--primary-btn-bg); }
+        /* Modal styles */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); z-index: 2000; display: none; justify-content: center; align-items: center; padding: 1rem; }
+        .modal-content { background-color: var(--card-bg); color: var(--text-color); padding: 2rem; border-radius: 12px; max-width: 600px; width: 100%; max-height: 90vh; overflow-y: auto; position: relative; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        .modal-close { position: absolute; top: 1rem; right: 1.5rem; font-size: 2rem; font-weight: bold; color: var(--text-muted-color); cursor: pointer; line-height: 1; }
+        .modal-close:hover { color: var(--text-color); }
+        #history-modal-title { margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--border-color); }
+        .history-entry { border-bottom: 1px solid var(--border-color); padding: 1rem 0; }
+        .history-entry:last-child { border-bottom: none; }
+        .history-q { font-size: 1.2rem; font-weight: 600; margin-bottom: 0.75rem; }
+        .history-a { font-size: 1rem; }
+        .history-a .user-answer.correct { color: var(--correct-color); font-weight: bold; }
+        .history-a .user-answer.wrong { color: var(--wrong-color); font-weight: bold; text-decoration: line-through; }
+        .history-a .correct-answer { color: var(--correct-color); font-weight: bold; }
         @media (max-width: 768px) { .header-content { flex-direction: row; gap: 1rem; } .title-group { flex-grow: 1; } .scores-group { flex-grow: 0; } .top-controls, .bottom-controls { flex-direction: column; align-items: stretch; gap: 1.5rem; } .game-card { padding: 1.5rem; } #question { font-size: 2.8rem; } .option-btn { font-size: 1.8rem; } }
         @media (max-width: 480px) { .header-content { flex-wrap: wrap; } .title-group { width: 100%; margin-bottom: 0.5rem; } .scores-group { width: 100%; justify-content: space-around; } #question { font-size: 2.2rem; } .option-btn { font-size: 1.5rem; } .title { font-size: 1.3rem; } .logo, #back-btn { font-size: 1.3rem; } }
     </style>
@@ -136,6 +149,7 @@
                             <span class="live-indicator"></span>
                         </a>
                         <button class="control-btn" id="reset-score-btn"><i class="fa-solid fa-rotate-left"></i></button>
+                        <button class="control-btn" id="history-btn"><i class="fa-solid fa-history"></i></button>
                     </div>
                     <div class="select-group">
                         <label id="operation-label" for="operation-select"></label>
@@ -151,7 +165,18 @@
                     </div>
                     <div class="select-group" id="timer-duration-group" style="display: none;">
                         <label for="timer-duration-select" id="timer-duration-label"></label>
-                        <select id="timer-duration-select"><option value="60">1</option><option value="120">2</option><option value="180">3</option><option value="240">4</option><option value="300">5</option></select>
+                        <select id="timer-duration-select">
+                            <option value="60">1</option><option value="120">2</option><option value="180">3</option><option value="240">4</option><option value="300">5</option>
+                            <option value="600">10</option><option value="900">15</option><option value="1800">30</option><option value="3600">60</option>
+                        </select>
+                    </div>
+                     <div class="select-group" id="next-q-delay-group">
+                        <label for="next-q-delay-select" id="next-q-delay-label"></label>
+                        <select id="next-q-delay-select">
+                            <!-- CHANGED: Made 0s the default option -->
+                            <option value="0">0s</option>
+                            <option value="5">5s</option>
+                        </select>
                     </div>
                 </div>
             </div>
@@ -170,15 +195,26 @@
     <div class="footer-status-bar" id="footer-bar">
         <span id="footer-message-text"></span><span class="close-footer-msg" id="close-footer-msg" title="Close">×</span>
     </div>
+    
+    <div id="history-modal" class="modal-overlay">
+        <div class="modal-content">
+            <span id="history-modal-close" class="modal-close">×</span>
+            <h3 id="history-modal-title"></h3>
+            <div id="history-content-area"></div>
+        </div>
+    </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const dom = {
                 backBtn: document.getElementById('back-btn'), title: document.querySelector('.title'), scoreLabel: document.getElementById('score-label'), scoreValue: document.getElementById('score-value'), incorrectScoreLabel: document.getElementById('incorrect-score-label'), incorrectScoreValue: document.getElementById('incorrect-score-value'), langSwitch: document.getElementById('lang-switch'), langText: document.getElementById('lang-text'), themeSwitch: document.getElementById('theme-switch'), resetBtn: document.getElementById('reset-score-btn'), operationLabel: document.getElementById('operation-label'), operationSelect: document.getElementById('operation-select'), difficultyLabel: document.getElementById('difficulty-label'), difficultySelect: document.getElementById('difficulty-select'), instruction: document.getElementById('instruction'), question: document.getElementById('question'), optionsContainer: document.getElementById('options-container'), nextBtn: document.getElementById('next-question-btn'), skipBtn: document.getElementById('skip-question-btn'), footerBar: document.getElementById('footer-bar'), footerMsgText: document.getElementById('footer-message-text'), closeFooterMsg: document.getElementById('close-footer-msg'), metaDescription: document.getElementById('meta-description'), timerChallengeCheckbox: document.getElementById('timer-challenge-checkbox'), timerChallengeLabel: document.getElementById('timer-challenge-label'), timerDurationGroup: document.getElementById('timer-duration-group'), timerDurationLabel: document.getElementById('timer-duration-label'), timerDurationSelect: document.getElementById('timer-duration-select'), gameTimerDisplay: document.getElementById('game-timer-display'), gameOverDisplay: document.getElementById('game-over-display'), gameOverTitle: document.getElementById('game-over-title'), gameOverSummary: document.getElementById('game-over-summary'), playAgainBtn: document.getElementById('play-again-btn'), appFooter: document.getElementById('app-footer'),
                 playLiveIconBtn: document.getElementById('play-live-icon-btn'),
+                nextQDelayLabel: document.getElementById('next-q-delay-label'), nextQDelaySelect: document.getElementById('next-q-delay-select'),
+                historyBtn: document.getElementById('history-btn'), historyModal: document.getElementById('history-modal'), historyModalClose: document.getElementById('history-modal-close'), historyModalTitle: document.getElementById('history-modal-title'), historyContentArea: document.getElementById('history-content-area'),
             };
-
-            let state = { score: 0, incorrectScore: 0, lang: 'odia', theme: 'light', difficulty: 'easy', operation: 'mix' };
+            
+            // CHANGED: nextQuestionDelay now defaults to 0 (Instant)
+            let state = { score: 0, incorrectScore: 0, lang: 'odia', theme: 'light', difficulty: 'easy', operation: 'mix', nextQuestionDelay: 0, answerHistory: [] };
             let currentQuestion = {}, nextQuestionTimerId = null, gameTimerId = null;
 
             const translations = {
@@ -187,40 +223,54 @@
                     opLabel: "ପ୍ରକାର:", ops: { mix: "ମିଶ୍ରଣ", "+": "ମିଶାଣ", "-": "ଫେଡାଣ", "×": "ଗୁଣନ", "÷": "ହରଣ" },
                     diffLabel: "ସ୍ତର:", diffs: { easy: "ସହଜ", medium: "ମଧ୍ୟମ", hard: "କଠିନ" },
                     instruction: "ଆପଣଙ୍କର ଉତ୍ତର ବାଛନ୍ତୁ", nextBtn: "ପରବର୍ତ୍ତୀ ପ୍ରଶ୍ନ", skipBtn: "ପ୍ରଶ୍ନ ଛାଡନ୍ତୁ",
-                    offlineMsg: "କୌଣସି ଅସୁବିଧା ନାହିଁ, ଆପଣ ଅଫଲାଇନରେ ମଧ୍ୟ ଏହାକୁ ବ୍ୟବହାର କରିପାରିବେ",
-                    onlineMsg: "ଆପଣଙ୍କ ସ୍କୋର୍ ଆପଣଙ୍କ ବ୍ରାଉଜରରେ ସେଭ୍ ହୋଇଛି",
-                    metaDesc: "ପିଲାମାନଙ୍କ ପାଇଁ ଏକ ମଜାଦାର ଗଣିତ ଖେଳ।",
-                    backBtnTitle: "ପଛକୁ ଯାଆନ୍ତୁ", resetBtnTitle: "ସ୍କୋର୍ ପୁନଃ ସେଟ୍ କରନ୍ତୁ", resetConfirm: "ଆପଣ ନିଶ୍ଚିତ ଯେ ଆପଣ ସ୍କୋର୍ ପୁନଃ ସେଟ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି?",
-                    timerChallenge: "ସମୟ ଚ୍ୟାଲେଞ୍ଜ", timerDuration: "ସମୟ (ମିନିଟ):", gameOverTitle: "ସମୟ ସମାପ୍ତ!",
-                    gameOverSummary: (s) => `ଆପଣ ${toOdiaNum(s)} ଟି ଠିକ୍ ଉତ୍ତର ଦେଇଛନ୍ତି।`, playAgain: "ପୁଣି ଖେଳନ୍ତୁ",
+                    metaDesc: "ପିଲାମାନଙ୍କ ପାଇଁ ଏକ ମଜାଦାର ଗଣିତ ଖେଳ।", backBtnTitle: "ପଛକୁ ଯାଆନ୍ତୁ", resetBtnTitle: "ସ୍କୋର୍ ପୁନଃ ସେଟ୍ କରନ୍ତୁ", resetConfirm: "ଆପଣ ନିଶ୍ଚିତ ଯେ ଆପଣ ସ୍କୋର୍ ଓ ଇତିହାସ ପୁନଃ ସେଟ୍ କରିବାକୁ ଚାହୁଁଛନ୍ତି?",
+                    timerChallenge: "ସମୟ ଚ୍ୟାଲେଞ୍ଜ", timerDuration: "ସମୟ (ମିନିଟ):", gameOverTitle: "ସମୟ ସମାପ୍ତ!", gameOverSummary: (s) => `ଆପଣ ${toOdiaNum(s)} ଟି ଠିକ୍ ଉତ୍ତର ଦେଇଛନ୍ତି।`, playAgain: "ପୁଣି ଖେଳନ୍ତୁ",
                     playLiveBtnTitle: "ଲାଇଭ୍ ଖେଳନ୍ତୁ",
-                    footerText: (year, name) => `© ${year} <a href="https://imsbg.github.io/odiagames/" target="_blank">${name}</a>. ସର୍ବସ୍ବତ୍ବ ସଂରକ୍ଷିତ.`
+                    footerText: (year, name) => `© ${year} <a href="https://imsbg.github.io/odiagames/" target="_blank">${name}</a>. ସର୍ବସ୍ବତ୍ବ ସଂରକ୍ଷିତ.`,
+                    nextQDelayLabel: "ପରବର୍ତ୍ତୀ ବିଳମ୍ବ:", nextQDelayOptions: { "0": "ତୁରନ୍ତ", "5": "୫ ସେକେଣ୍ଡ" },
+                    historyBtnTitle: "ଉତ୍ତର ଇତିହାସ ଦେଖନ୍ତୁ", historyModalTitle: "ଉତ୍ତର ଇତିହାସ", historyUserAnswer: "ଆପଣଙ୍କ ଉତ୍ତର:", historyCorrectAnswer: "ଠିକ୍ ଉତ୍ତର:", historyNoEntries: "କୌଣସି ଇତିହାସ ମିଳିଲା ନାହିଁ।",
                 },
                 english: {
                     title: "SB Math Wizard", appName: "SB Math Wizard", scoreLabel: "Score", incorrectLabel: "Wrong", langText: "ଓଡ଼ିଆ",
                     opLabel: "Type:", ops: { mix: "Mix", "+": "Addition", "-": "Subtraction", "×": "Multiplication", "÷": "Division" },
                     diffLabel: "Level:", diffs: { easy: "Easy", medium: "Medium", hard: "Hard" },
                     instruction: "Choose your answer", nextBtn: "Next Question", skipBtn: "Skip Question",
-                    offlineMsg: "No problem, you can use it even when you are offline",
-                    onlineMsg: "Your score is saved in your browser",
-                    metaDesc: "A fun math game for kids.",
-                    backBtnTitle: "Go Back", resetBtnTitle: "Reset Score", resetConfirm: "Are you sure you want to reset your score?",
-                    timerChallenge: "Timer Challenge", timerDuration: "Duration (min):", gameOverTitle: "Time's Up!",
-                    gameOverSummary: (s) => `You answered ${s} questions correctly.`, playAgain: "Play Again",
+                    metaDesc: "A fun math game for kids.", backBtnTitle: "Go Back", resetBtnTitle: "Reset Score", resetConfirm: "Are you sure you want to reset your score and history?",
+                    timerChallenge: "Timer Challenge", timerDuration: "Duration (min):", gameOverTitle: "Time's Up!", gameOverSummary: (s) => `You answered ${s} questions correctly.`, playAgain: "Play Again",
                     playLiveBtnTitle: "Play Live",
-                    footerText: (year, name) => `© ${year} <a href="https://imsbg.github.io/odiagames/" target="_blank">${name}</a>. All rights reserved.`
+                    footerText: (year, name) => `© ${year} <a href="https://imsbg.github.io/odiagames/" target="_blank">${name}</a>. All rights reserved.`,
+                    nextQDelayLabel: "Next Q Delay:", nextQDelayOptions: { "0": "Instant", "5": "5 Seconds" },
+                    historyBtnTitle: "View Answer History", historyModalTitle: "Answer History", historyUserAnswer: "Your Answer:", historyCorrectAnswer: "Correct Answer:", historyNoEntries: "No history found.",
                 }
             };
-            // The rest of the JavaScript remains the same, but with one key change in `applyLanguage`
+
             const toOdiaNum = num => (state.lang === 'english') ? num.toString() : String(num).split('').map(d => ['୦', '୧', '୨', '୩', '୪', '୫', '୬', '୭', '୮', '୯'][parseInt(d)] || d).join('');
-            const saveState = () => { for (let key in state) localStorage.setItem(`sbGanita.${key}`, state[key]); };
+            
+            const saveState = () => {
+                for (const key in state) {
+                    const value = key === 'answerHistory' ? JSON.stringify(state[key]) : state[key];
+                    localStorage.setItem(`sbGanita.${key}`, value);
+                }
+            };
             const loadState = () => {
-                for (let key in state) state[key] = localStorage.getItem(`sbGanita.${key}`) || state[key];
-                state.score = parseInt(state.score) || 0; state.incorrectScore = parseInt(state.incorrectScore) || 0;
+                const storedLang = localStorage.getItem('sbGanita.lang');
+                if (storedLang) state.lang = storedLang;
                 const params = new URLSearchParams(window.location.search);
                 if (params.get('lang') === 'en') state.lang = 'english'; else if (params.get('lang') === 'or') state.lang = 'odia';
-                dom.difficultySelect.value = state.difficulty; dom.operationSelect.value = state.operation;
+                
+                state.score = parseInt(localStorage.getItem('sbGanita.score')) || 0;
+                state.incorrectScore = parseInt(localStorage.getItem('sbGanita.incorrectScore')) || 0;
+                state.theme = localStorage.getItem('sbGanita.theme') || 'light';
+                state.difficulty = localStorage.getItem('sbGanita.difficulty') || 'easy';
+                state.operation = localStorage.getItem('sbGanita.operation') || 'mix';
+                state.nextQuestionDelay = localStorage.getItem('sbGanita.nextQuestionDelay') !== null ? parseInt(localStorage.getItem('sbGanita.nextQuestionDelay')) : state.nextQuestionDelay;
+                state.answerHistory = JSON.parse(localStorage.getItem('sbGanita.answerHistory')) || [];
+
+                dom.difficultySelect.value = state.difficulty;
+                dom.operationSelect.value = state.operation;
+                dom.nextQDelaySelect.value = state.nextQuestionDelay;
             };
+
             const generateQuestion = () => {
                 if (nextQuestionTimerId) clearInterval(nextQuestionTimerId);
                 const op = (state.operation === 'mix') ? ['+', '-', '×', '÷'][Math.floor(Math.random() * 4)] : state.operation;
@@ -255,27 +305,40 @@
                 const allBtns = dom.optionsContainer.querySelectorAll('.option-btn');
                 allBtns.forEach(btn => { btn.classList.add('disabled'); btn.removeEventListener('click', handleOptionClick); });
                 const selectedBtn = e.currentTarget, chosenAnswer = parseInt(selectedBtn.dataset.value);
+                
+                state.answerHistory.push({ questionText: currentQuestion.text, userAnswer: chosenAnswer, correctAnswer: currentQuestion.answer });
+
                 selectedBtn.classList.add('selected');
                 if (chosenAnswer === currentQuestion.answer) { state.score++; selectedBtn.classList.add('correct'); } 
                 else { state.incorrectScore++; selectedBtn.classList.add('wrong'); allBtns.forEach(btn => { if (parseInt(btn.dataset.value) === currentQuestion.answer) btn.classList.add('correct-answer'); }); }
+                
                 updateAllScoresDisplay(); 
                 if (!dom.timerChallengeCheckbox.checked) { saveState(); }
+                
                 if (dom.timerChallengeCheckbox.checked) { setTimeout(generateQuestion, 500); } 
                 else { dom.nextBtn.style.display = 'block'; dom.skipBtn.style.display = 'none'; startNextQuestionTimer(); }
             };
             const startNextQuestionTimer = () => {
-                let countdown = 5;
+                if (nextQuestionTimerId) clearInterval(nextQuestionTimerId);
                 const baseText = translations[state.lang].nextBtn;
-                dom.nextBtn.textContent = `${baseText} (${toOdiaNum(countdown)})`;
-                nextQuestionTimerId = setInterval(() => {
-                    countdown--;
-                    if (countdown >= 0) dom.nextBtn.textContent = `${baseText} (${toOdiaNum(countdown)})`;
-                    else { clearInterval(nextQuestionTimerId); generateQuestion(); }
-                }, 1000);
+
+                if (state.nextQuestionDelay == 0) {
+                    dom.nextBtn.textContent = baseText;
+                    // CHANGED: Delay reduced from 800ms to 200ms for a faster, almost instant feel
+                    nextQuestionTimerId = setTimeout(() => { generateQuestion(); }, 200); 
+                } else {
+                    let countdown = 5;
+                    dom.nextBtn.textContent = `${baseText} (${toOdiaNum(countdown)})`;
+                    nextQuestionTimerId = setInterval(() => {
+                        countdown--;
+                        if (countdown >= 0) dom.nextBtn.textContent = `${baseText} (${toOdiaNum(countdown)})`;
+                        else { clearInterval(nextQuestionTimerId); generateQuestion(); }
+                    }, 1000);
+                }
             };
             const resetScores = (confirmReset = true) => {
                 if (confirmReset && !confirm(translations[state.lang].resetConfirm)) return;
-                state.score = 0; state.incorrectScore = 0;
+                state.score = 0; state.incorrectScore = 0; state.answerHistory = [];
                 updateAllScoresDisplay(); saveState();
             };
             const applyLanguage = () => {
@@ -287,17 +350,14 @@
                 dom.metaDescription.setAttribute('content', T.metaDesc); dom.backBtn.title = T.backBtnTitle; dom.resetBtn.title = T.resetBtnTitle;
                 for (const opt of dom.difficultySelect.options) opt.textContent = T.diffs[opt.value];
                 for (const opt of dom.operationSelect.options) opt.textContent = T.ops[opt.value];
-                for (const opt of dom.timerDurationSelect.options) {
-                    const minuteValue = parseInt(opt.value) / 60;
-                    opt.textContent = toOdiaNum(minuteValue);
-                }
+                for (const opt of dom.timerDurationSelect.options) { opt.textContent = toOdiaNum(parseInt(opt.value) / 60); }
                 dom.timerChallengeLabel.textContent = T.timerChallenge; dom.timerDurationLabel.textContent = T.timerDuration;
                 dom.playAgainBtn.textContent = T.playAgain; dom.gameOverTitle.textContent = T.gameOverTitle;
-                
-                // === THIS IS THE KEY CHANGE ===
                 dom.playLiveIconBtn.title = T.playLiveBtnTitle; 
-                // =============================
-
+                dom.nextQDelayLabel.textContent = T.nextQDelayLabel;
+                for (const opt of dom.nextQDelaySelect.options) { opt.textContent = T.nextQDelayOptions[opt.value]; }
+                dom.historyBtn.title = T.historyBtnTitle;
+                dom.historyModalTitle.textContent = T.historyModalTitle;
                 const year = new Date().getFullYear();
                 dom.appFooter.innerHTML = T.footerText(toOdiaNum(year), T.appName);
                 updateAllScoresDisplay();
@@ -305,13 +365,15 @@
             const startGame = () => {
                 if (gameTimerId) clearInterval(gameTimerId); if (nextQuestionTimerId) clearInterval(nextQuestionTimerId);
                 if(dom.timerChallengeCheckbox.checked) {
-                    state.score = 0; state.incorrectScore = 0;
+                    state.score = 0; state.incorrectScore = 0; state.answerHistory = []; saveState();
                     updateAllScoresDisplay();
                     startGameTimer(parseInt(dom.timerDurationSelect.value));
                     dom.gameTimerDisplay.style.display = 'block';
+                    dom.nextQDelaySelect.parentElement.style.display = 'none';
                 } else {
                     loadState(); updateAllScoresDisplay();
                     dom.gameTimerDisplay.style.display = 'none';
+                    dom.nextQDelaySelect.parentElement.style.display = 'flex';
                 }
                 dom.gameOverDisplay.style.display = 'none'; dom.optionsContainer.style.pointerEvents = 'auto'; dom.question.style.display = 'block';
                 generateQuestion();
@@ -332,17 +394,40 @@
                 dom.question.style.display = 'none'; dom.skipBtn.style.display = 'none';
                 if (nextQuestionTimerId) clearInterval(nextQuestionTimerId);
             };
+            const displayHistory = () => {
+                const T = translations[state.lang];
+                dom.historyContentArea.innerHTML = '';
+                if (state.answerHistory.length === 0) {
+                    dom.historyContentArea.textContent = T.historyNoEntries;
+                } else {
+                    [...state.answerHistory].reverse().forEach(entry => {
+                        const entryDiv = document.createElement('div');
+                        entryDiv.className = 'history-entry';
+                        const isCorrect = entry.userAnswer === entry.correctAnswer;
+                        const resultIcon = isCorrect ? `<i class="fas fa-check-circle" style="color: var(--correct-color);"></i>` : `<i class="fas fa-times-circle" style="color: var(--wrong-color);"></i>`;
+                        let userAnswerHTML = `<span class="user-answer ${isCorrect ? 'correct' : 'wrong'}">${toOdiaNum(entry.userAnswer)}</span>`;
+                        let correctAnswerHTML = !isCorrect ? `<br>${T.historyCorrectAnswer} <span class="correct-answer">${toOdiaNum(entry.correctAnswer)}</span>` : '';
+                        entryDiv.innerHTML = `<p class="history-q">${entry.questionText}</p><p class="history-a">${resultIcon} ${T.historyUserAnswer} ${userAnswerHTML}${correctAnswerHTML}</p>`;
+                        dom.historyContentArea.appendChild(entryDiv);
+                    });
+                }
+                dom.historyModal.style.display = 'flex';
+            };
             const init = () => {
                 loadState(); applyLanguage();
                 document.body.dataset.theme = state.theme; dom.themeSwitch.querySelector('i').className = state.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
                 dom.themeSwitch.addEventListener('click', () => { state.theme = (state.theme === 'light' ? 'dark' : 'light'); document.body.dataset.theme = state.theme; dom.themeSwitch.querySelector('i').className = state.theme === 'dark' ? 'fas fa-sun' : 'fas fa-moon'; saveState(); });
-                dom.langSwitch.addEventListener('click', () => { state.lang = (state.lang === 'odia' ? 'english' : 'odia'); applyLanguage(); saveState(); });
+                dom.langSwitch.addEventListener('click', () => { state.lang = (state.lang === 'odia' ? 'english' : 'odia'); applyLanguage(); saveState(); generateQuestion(); });
                 dom.resetBtn.addEventListener('click', () => resetScores(true));
                 dom.nextBtn.addEventListener('click', generateQuestion); dom.skipBtn.addEventListener('click', generateQuestion);
                 [dom.difficultySelect, dom.operationSelect].forEach(el => el.addEventListener('change', (e) => { state[el.id.includes('diff') ? 'difficulty' : 'operation'] = e.target.value; saveState(); generateQuestion(); }));
                 dom.timerChallengeCheckbox.addEventListener('change', (e) => { dom.timerDurationGroup.style.display = e.target.checked ? 'flex' : 'none'; startGame(); });
                 dom.timerDurationSelect.addEventListener('change', startGame);
                 dom.playAgainBtn.addEventListener('click', startGame);
+                dom.nextQDelaySelect.addEventListener('change', (e) => { state.nextQuestionDelay = parseInt(e.target.value); saveState(); });
+                dom.historyBtn.addEventListener('click', displayHistory);
+                dom.historyModalClose.addEventListener('click', () => dom.historyModal.style.display = 'none');
+                dom.historyModal.addEventListener('click', (e) => { if (e.target === dom.historyModal) dom.historyModal.style.display = 'none'; });
                 startGame();
             };
             const updateAllScoresDisplay = () => { dom.scoreValue.textContent = toOdiaNum(state.score); dom.incorrectScoreValue.textContent = toOdiaNum(state.incorrectScore); };
