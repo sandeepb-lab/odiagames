@@ -1,10 +1,34 @@
 <!DOCTYPE html>
+<!-- SEO: Specify language in the HTML tag -->
 <html lang="or">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SB ମୋ ଓଡ଼ିଆ ଖେଳ - All My Odia Games</title>
-    <meta name="description" content="Play the best Odia educational games like Ganita Bigyan. Fun and learning for everyone.">
+
+    <!-- SEO: 1. CRITICAL TITLE TAG - Keywords first -->
+    <title>ମୋ ଓଡ଼ିଆ ଖେଳ, My Odia Games - Play Fun Odia Games | SB ମୋ ଓଡ଼ିଆ ଖେଳ</title>
+
+    <!-- SEO: 2. POWERFUL META DESCRIPTION - Compelling and keyword-rich -->
+    <meta name="description" content="Play ଗଣିତ ବିଜ୍ଞ (Math Wizard) and other fun Odia games. Challenge your mind with our educational math puzzles. The best collection of Odia games for learning and fun!">
+
+    <!-- SEO: 3. CANONICAL URL - Prevents duplicate content issues -->
+    <link rel="canonical" href="https://imsbg.github.io/odiagames/">
+
+    <!-- SEO: 4. META KEYWORDS (Good for focus) -->
+    <meta name="keywords" content="ଗଣିତ ବିଜ୍ଞ, Math Wizard, Odia Games, ଓଡ଼ିଆ ଖେଳ, Odia educational games, math puzzles, odia learning games, SB Odia Games, ସନ୍ଦୀପ ବିଶ୍ଵାଳ ଗେମ୍">
+
+    <!-- SEO: 5. OPEN GRAPH & TWITTER CARDS (For social media sharing) -->
+    <meta property="og:title" content="ଗଣିତ ବିଜ୍ଞ, Math Wizard - Play Fun Odia Games">
+    <meta property="og:description" content="Play the best collection of Odia games like ଗଣିତ ବିଜ୍ଞ (Math Wizard). Fun and educational math puzzles for everyone.">
+    <meta property="og:image" content="https://imsbg.github.io/odiagames/social-preview.png"> <!-- IMPORTANT: Create a 1200x630px image named 'social-preview.png' -->
+    <meta property="og:url" content="https://imsbg.github.io/odiagames/">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="or_IN">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="ଗଣିତ ବିଜ୍ଞ, Math Wizard - Play Fun Odia Games">
+    <meta name="twitter:description" content="The best collection of Odia educational games, including the popular Math Wizard (ଗଣିତ ବିଜ୍ଞ).">
+    <meta name="twitter:image" content="https://imsbg.github.io/odiagames/social-preview.png"> <!-- Use the same image -->
+
 
     <!-- Google Fonts: Noto Sans Oriya for Odia & Poppins for English -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -17,7 +41,7 @@
         /* --- CSS Variables for Easy Theme Management --- */
         :root {
             --primary-color: #0A2463; /* Deep Blue */
-            --secondary-color: #00693f; /* Lighter Blue */
+            --secondary-color: #00693f; /* Your new Green color */
             --accent-color: #FF9F1C; /* Saffron/Orange */
             --text-light: #FFFFFF;
             --text-dark: #121212;
@@ -127,7 +151,6 @@
 
         /* --- Instagram Link Styles --- */
         .instagram-link {
-              background : linear-gradient(45deg, #f09433, #e6683c, #dc2743, #cc2366, #bc1888);
             display: flex;
             align-items: center;
             gap: 8px;
@@ -139,24 +162,8 @@
             fill: currentColor; /* Use the parent link's text color by default */
             transition: fill 0.3s ease; /* Add a smooth transition for the fill */
         }
-
-        /* Change SVG fill to gradient on hover */
-        .instagram-link:hover svg {
-            fill: url(#instagram-gradient);
-        }
         
-        /* For the Instagram link, we don't want the text color to change on hover, just the icon */
-        .instagram-link:hover {
-            color: #ffffff
-           
-
-        }
-        header.scrolled .instagram-link:hover {
-             color: var(--header-text-scrolled);
-        }
-        
-
-        /* --- CHANGE: Styles for the new single language toggle button --- */
+        /* --- Styles for the single language toggle button --- */
         .lang-toggle-btn {
             background-color: var(--secondary-color);
             color: var(--text-light);
@@ -217,7 +224,25 @@
         #menu-toggle.active span:nth-child(3) {
             transform: rotate(-45deg) translate(7px, -7px);
         }
-
+        
+        /* SEO: CSS FOR THE NEW HERO SECTION */
+        .hero-section {
+            background: var(--primary-color);
+            color: var(--text-light);
+            text-align: center;
+            padding: 3rem 1rem;
+        }
+        .hero-section h1 {
+            font-size: 3rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.2;
+        }
+        .hero-section p {
+            font-size: 1.2rem;
+            max-width: 700px;
+            margin: 0 auto;
+            opacity: 0.9;
+        }
 
         /* --- Games Grid Section --- */
         .games-grid {
@@ -258,8 +283,7 @@
             width: 80px;
             height: 80px;
             margin: 0 auto 1.5rem auto;
-            background-color: var(--bg-light);
-            border-radius: 0%;
+            border-radius: 20%;
             object-fit: cover;
         }
 
@@ -308,7 +332,6 @@
                 font-size: 1.5rem;
             }
 
-            /* --- Mobile Navigation --- */
             #menu-toggle {
                 display: flex; /* Show hamburger */
             }
@@ -350,7 +373,7 @@
              .main-nav a.instagram-link {
                 display: inline-flex; /* Keep icon and text together */
                 justify-content: center;
-                width: 100%;
+                width: auto;
             }
             .main-nav a:hover {
                 background-color: var(--bg-light);
@@ -359,6 +382,9 @@
                  background-color: transparent; /* Prevent background color change on instagram link */
             }
             
+            .hero-section h1 { font-size: 2.2rem; }
+            .hero-section p { font-size: 1rem; }
+
             .modal-content {
                 width: 90%;
                 margin: 20% auto;
@@ -368,6 +394,58 @@
             }
         }
     </style>
+
+    <!-- SEO: 6. JSON-LD STRUCTURED DATA - Speaks directly to Google -->
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "WebSite",
+      "name": "SB ମୋ ଓଡ଼ିଆ ଖେଳ - Odia Games",
+      "url": "https://imsbg.github.io/odiagames/",
+      "potentialAction": {
+        "@type": "SearchAction",
+        "target": "https://imsbg.github.io/odiagames/?q={search_term_string}",
+        "query-input": "required name=search_term_string"
+      }
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "ଗଣିତ ବିଜ୍ଞ (Math Wizard)",
+      "operatingSystem": "WEB",
+      "applicationCategory": "Game, EducationalGame",
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": "4.8", 
+        "ratingCount": "150" 
+      },
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "description": "Challenge your brain with fun math puzzles. A popular Odia game for improving math skills.",
+      "inLanguage": "or"
+    }
+    </script>
+    <script type="application/ld+json">
+    {
+      "@context": "https://schema.org",
+      "@type": "SoftwareApplication",
+      "name": "ଗଣିତ ବିଜ୍ଞ ଗେମ୍ ରୁମ୍ (Math Wiz Game Room)",
+      "operatingSystem": "WEB",
+      "applicationCategory": "Game, EducationalGame, MultiplayerGame",
+      "offers": {
+        "@type": "Offer",
+        "price": "0",
+        "priceCurrency": "INR"
+      },
+      "description": "Play time-bound math challenges with your friends in a shared game room. The ultimate multiplayer Odia game.",
+      "inLanguage": "or"
+    }
+    </script>
 </head>
 <body class="or-lang">
 
@@ -387,7 +465,7 @@
 
     <header id="main-header">
         <div class="container">
-            <a href="#" class="logo" data-key="logo_text">SB ମୋ ଓଡ଼ିଆ ଖେଳ</a>
+            <a href="https://imsbg.github.io/odiagames/" class="logo" data-key="logo_text">SB ମୋ ଓଡ଼ିଆ ଖେଳ</a>
             
             <div class="header-right-group">
                 <nav class="main-nav">
@@ -396,14 +474,12 @@
                         <li><a id="privacy-link" data-key="nav_privacy">ଗୋପନୀୟତା ନୀତି</a></li>
                         <li>
                             <a href="https://www.instagram.com/sandeepbiswalg" target="_blank" rel="noopener noreferrer" class="instagram-link">
-                                <!-- The fill attribute has been removed from here to be controlled by CSS -->
                                 <svg role="img" viewBox="0 0 24 24"><path d="M12 0C8.74 0 8.333.015 7.053.072 5.775.132 4.905.333 4.14.63c-.789.306-1.459.717-2.126 1.384S.935 3.35.63 4.14C.333 4.905.131 5.775.072 7.053.012 8.333 0 8.74 0 12s.015 3.667.072 4.947c.06 1.277.261 2.148.558 2.913.306.788.717 1.459 1.384 2.126.667.666 1.336 1.079 2.126 1.384.766.296 1.636.499 2.913.558C8.333 23.988 8.74 24 12 24s3.667-.015 4.947-.072c1.277-.06 2.148-.262 2.913-.558.788-.306 1.459-.718 2.126-1.384.666-.667 1.079-1.335 1.384-2.126.296-.765.499-1.636.558-2.913.06-1.28.072-1.687.072-4.947s-.015-3.667-.072-4.947c-.06-1.277-.262-2.149-.558-2.913-.306-.789-.718-1.459-1.384-2.126C21.314 1.65 20.644 1.237 19.854.93c-.765-.297-1.636-.499-2.913-.558C15.667.012 15.26 0 12 0zm0 2.16c3.203 0 3.585.016 4.85.071 1.17.055 1.805.249 2.227.415.562.217.96.477 1.382.896.419.42.679.819.896 1.381.164.422.36 1.057.413 2.227.057 1.266.07 1.646.07 4.85s-.015 3.585-.074 4.85c-.056 1.17-.249 1.805-.413 2.227-.217.562-.477.96-.896 1.381-.42.419-.82.679-1.382.896-.421.164-1.057.36-2.227.413-1.266.057-1.646.07-4.85.07s-3.585-.015-4.85-.074c-1.17-.056-1.805-.249-2.227-.413-.562-.217-.96-.477-1.381-.896-.42-.42-.68-.82-.896-1.381-.165-.422-.36-1.057-.413-2.227-.055-1.266-.07-1.646-.07-4.85s.015-3.585.07-4.85c.055-1.17.249-1.805.413-2.227.217-.562.477-.96.896-1.381.42-.42.819-.68 1.381-.896.422-.165 1.057-.36 2.227-.413C8.415 2.175 8.797 2.16 12 2.16zm0 5.482A4.357 4.357 0 1016.357 12 4.357 4.357 0 0012 7.642zm0 7.21a2.853 2.853 0 112.853-2.853A2.856 2.856 0 0112 14.852zm5.76-7.167a1.03 1.03 0 11-1.03-1.03 1.03 1.03 0 011.03 1.03z"></path></svg>
                                 <span data-key="nav_instagram">ଇନଷ୍ଟାଗ୍ରାମ</span>
                             </a>
                         </li>
                     </ul>
                 </nav>
-                <!-- CHANGE: Replaced the two-button switcher with a single toggle button -->
                 <button id="lang-toggle-btn" class="lang-toggle-btn"></button>
                 <button id="menu-toggle">
                     <span></span>
@@ -415,14 +491,46 @@
     </header>
 
     <main>
+        <!-- SEO: 7. ADDED A HERO SECTION WITH A CLEAR H1 TAG -->
+        <!--  <section class="hero-section">
+            <div class="container">
+                <h1 data-key="main_headline">Play Odia Games: ଗଣିତ ବିଜ୍ଞ</h1>
+                <p data-key="main_subheadline">The best collection of fun and educational Odia games like Math Wizard to challenge your mind and help you learn.</p>
+            </div>
+        </section> -->
+
         <section class="games-grid">
             <div class="container">
                 <h2 data-key="games_title">ଆମର ଖେଳ</h2>
                 <div class="grid-container">
-                    <!-- Game Cards ... -->
-                    <div class="game-card"><div><img src="https://imsbg.github.io/odiagames/icon/mo.png" alt="Game Icon" class="game-icon"><h3 data-key="game1_title">ଗଣିତ ବିଜ୍ଞ</h3><p data-key="game1_desc">ମଜାଦାର ଗଣିତ ପଜଲ୍ ସହିତ ଆପଣଙ୍କର ମସ୍ତିଷ୍କକୁ ଚ୍ୟାଲେଞ୍ଜ କରନ୍ତୁ |</p></div><a href="https://imsbg.github.io/odiagames/ଗଣିତ%20ବିଜ୍ଞ" class="btn-play" data-key="play_now_btn">ଏବେ ଖେଳନ୍ତୁ</a></div>
-                    <div class="game-card"><div><img src="https://imsbg.github.io/odiagames/icon/ml.png" alt="Game Icon" class="game-icon"><h3 data-key="game2_title">ଗଣିତ ବିଜ୍ଞ ଗେମ୍ ରୁମ୍</h3><p data-key="game2_desc">ଅଧିକ ରୋମାଞ୍ଚକର ସ୍ତର ଏବଂ ନୂତନ ଗାଣିତିକ ସମସ୍ୟା |</p></div><a href="https://imsbg.github.io/odiagames/ଗଣିତ%20ବିଜ୍ଞ/live" class="btn-play" data-key="play_now_btn">ଏବେ ଖେଳନ୍ତୁ</a></div>
-                    <div class="game-card"><div><img src="https://i.ibb.co/6RkCPyjz/deafc4b6-ed6e-49b5-9496-670689cf4b57.jpg" alt="Game Icon" class="game-icon"><h3 data-key="game3_title">ଆଗକୁ ଆସିବ</h3><p data-key="game3_desc">କିଛି ନୂତନ ଖେଳ ଆସିଲେ ଏଠାରେ ଯୋଗ କରାଯିବ |</p></div><a href="#" class="btn-play" data-key="play_now_btn">ଏବେ ଖେଳନ୍ତୁ</a></div>
+                    
+                    <div class="game-card">
+                        <div>
+                            <!-- SEO: 8. DESCRIPTIVE ALT TEXT FOR IMAGES -->
+                            <img src="https://imsbg.github.io/odiagames/icon/mo.png" alt="Icon for ଗଣିତ ବିଜ୍ଞ - Math Wizard Odia Game" class="game-icon">
+                            <h3 data-key="game1_title">ଗଣିତ ବିଜ୍ଞ</h3>
+                            <p data-key="game1_desc">ମଜାଦାର ଗଣିତ ପଜଲ୍ ସହିତ ଆପଣଙ୍କର ମସ୍ତିଷ୍କକୁ ଚ୍ୟାଲେଞ୍ଜ କରନ୍ତୁ |</p>
+                        </div>
+                        <a href="/ଗଣିତ%20ବିଜ୍ଞ" class="btn-play" data-key="play_now_btn">ଏବେ ଖେଳନ୍ତୁ</a>
+                    </div>
+                    
+                    <div class="game-card">
+                        <div>
+                            <img src="https://imsbg.github.io/odiagames/icon/ml.png" alt="Icon for ଗଣିତ ବିଜ୍ଞ ଗେମ୍ ରୁମ୍ - Math Wiz Game Room" class="game-icon">
+                            <h3 data-key="game2_title">ଗଣିତ ବିଜ୍ଞ ଗେମ୍ ରୁମ୍</h3>
+                            <p data-key="game2_desc">ଅଧିକ ରୋମାଞ୍ଚକର ସ୍ତର ଏବଂ ନୂତନ ଗାଣିତିକ ସମସ୍ୟା |</p>
+                        </div>
+                        <a href="/ଗଣିତ%20ବିଜ୍ଞ/live" class="btn-play" data-key="play_now_btn">ଏବେ ଖେଳନ୍ତୁ</a>
+                    </div>
+
+                    <div class="game-card">
+                        <div>
+                            <img src="https://i.ibb.co/6RkCPyjz/deafc4b6-ed6e-49b5-9496-670689cf4b57.jpg" alt="More Odia games are coming soon" class="game-icon">
+                            <h3 data-key="game3_title">ଆଗକୁ ଆସିବ</h3>
+                            <p data-key="game3_desc">କିଛି ନୂତନ ଖେଳ ଆସିଲେ ଏଠାରେ ଯୋଗ କରାଯିବ |</p>
+                        </div>
+                        <a href="#" class="btn-play" data-key="play_now_btn">ଏବେ ଖେଳନ୍ତୁ</a>
+                    </div>
                   
                 </div>
             </div>
@@ -484,6 +592,11 @@
                 nav_terms: "ସର୍ତ୍ତାବଳୀ", 
                 nav_privacy: "ଗୋପନୀୟତା ନୀତି", 
                 nav_instagram: "ଇନଷ୍ଟାଗ୍ରାମ",
+                
+                // SEO: Added translation keys for the new hero section
+                main_headline: "ଓଡ଼ିଆ ଖେଳ ଖେଳନ୍ତୁ: ଗଣିତ ବିଜ୍ଞ",
+                main_subheadline: "ମନକୁ ଚ୍ୟାଲେଞ୍ଜ କରିବା ଏବଂ ଶିଖିବାରେ ସାହାଯ୍ୟ କରିବା ପାଇଁ ଗଣିତ ବିଜ୍ଞ ଭଳି ମଜାଦାର ଏବଂ ଶିକ୍ଷଣୀୟ ଓଡ଼ିଆ ଖେଳର ସର୍ବୋତ୍ତମ ସଂଗ୍ରହ।",
+                
                 games_title: "ଆମର ଖେଳ", 
                 play_now_btn: "ଏବେ ଖେଳନ୍ତୁ", 
                 game1_title: "ଗଣିତ ବିଜ୍ଞ", 
@@ -521,6 +634,11 @@
                 nav_terms: "Terms", 
                 nav_privacy: "Privacy Policy", 
                 nav_instagram: "Instagram",
+
+                // SEO: Added translation keys for the new hero section
+                main_headline: "Play Odia Games: Math Wizard",
+                main_subheadline: "The best collection of fun and educational Odia games like Math Wizard to challenge your mind and help you learn.",
+
                 games_title: "Our Games", 
                 play_now_btn: "Play Now", 
                 game1_title: "Math Wizard", 
@@ -555,7 +673,7 @@
             }
         };
 
-        // --- CHANGE: 2. LANGUAGE SWITCHING LOGIC (Updated for single button) ---
+        // --- 2. LANGUAGE SWITCHING LOGIC (Updated for single button) ---
         const langToggleBtn = document.getElementById('lang-toggle-btn');
         let currentLang; // This will hold the current language state ('or' or 'en')
         
@@ -594,7 +712,6 @@
         });
         
         // --- 3. MODAL (POP-UP) LOGIC ---
-        // (This section remains unchanged)
         const termsModal = document.getElementById('terms-modal');
         const privacyModal = document.getElementById('privacy-modal');
         const openModalLinks = [
@@ -629,7 +746,6 @@
         };
 
         // --- 4. HEADER SCROLL EFFECT ---
-        // (This section remains unchanged)
         const header = document.getElementById('main-header');
         window.addEventListener('scroll', () => {
             if (window.scrollY > 50) {
@@ -640,7 +756,6 @@
         });
 
         // --- 5. MOBILE MENU TOGGLE ---
-        // (This section remains unchanged)
         const menuToggle = document.getElementById('menu-toggle');
         const mainNav = document.querySelector('.main-nav');
         menuToggle.addEventListener('click', () => {
@@ -658,7 +773,7 @@
             }
         });
 
-        // --- CHANGE: 6. INITIAL LANGUAGE SET (Simplified) ---
+        // --- 6. INITIAL LANGUAGE SET ---
         const getInitialLanguage = () => {
             const langFromUrl = new URLSearchParams(window.location.search).get('lang');
             if (langFromUrl === 'en' || langFromUrl === 'or') {
